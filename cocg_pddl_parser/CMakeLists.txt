@@ -54,8 +54,8 @@ install(TARGETS
 )
 
 file(COPY
-  test/pddl
-  DESTINATION ${CMAKE_BINARY_DIR}/${PROJECT_NAME}
+  test/pddl_parser
+  DESTINATION ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}
 )
 
 if(BUILD_TESTING)

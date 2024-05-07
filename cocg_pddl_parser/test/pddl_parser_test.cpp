@@ -30,8 +30,8 @@ class PDDLParserTestCase : public ::testing::Test {
 
 TEST(PDDLParserTestCase, pddl_parser) {
   std::string pkgpath = std::filesystem::current_path().string();
-  std::string domain_file = pkgpath + "/pddl/dom1.pddl";
-  std::string instance_file = pkgpath + "/pddl/prob1.pddl";
+  std::string domain_file = pkgpath + "/pddl_parser/dom1.pddl";
+  std::string instance_file = pkgpath + "/pddl_parser/prob1.pddl";
 
   std::ifstream domain_ifs(domain_file);
   ASSERT_TRUE(domain_ifs.good());
