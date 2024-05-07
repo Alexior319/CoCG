@@ -28,6 +28,11 @@ make
 cd build/cocg_pddl_parser
 ./parser pddl/dom1.pddl pddl/prob1.pddl
 ```
+Or
+```
+cd build/cocg_pddl_parser
+./pddl_parser_test
+```
 
 2.  xxxx
 3.  xxxx

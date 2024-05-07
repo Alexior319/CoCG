@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <algorithm>
+#include <filesystem>
 #include <map>
 #include <memory>
 #include <sstream>
@@ -24,12 +25,11 @@
 
 class PDDLParserTestCase : public ::testing::Test {
  protected:
-  static void SetUpTestCase() { rclcpp::init(0, nullptr); }
+  static void SetUpTestCase() {}
 };
 
 TEST(PDDLParserTestCase, pddl_parser) {
-  std::string pkgpath =
-      ament_index_cpp::get_package_share_directory("cocg_pddl_parser");
+  std::string pkgpath = std::filesystem::current_path().string();
   std::string domain_file = pkgpath + "/pddl/dom1.pddl";
   std::string instance_file = pkgpath + "/pddl/prob1.pddl";
 
