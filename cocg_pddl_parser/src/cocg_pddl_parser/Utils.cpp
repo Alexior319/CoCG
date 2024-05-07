@@ -42,43 +42,43 @@ uint8_t getNodeType(const std::string& expr, uint8_t default_node_type) {
   if (std::regex_search(expr, match, std::regex("\\(\\s*and[ (]"))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      node_type = plansys2_msgs::msg::Node::AND;
+      node_type = cocg_ast::Node::AND;
     }
   }
 
   if (std::regex_search(expr, match, std::regex("\\(\\s*or[ (]"))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      node_type = plansys2_msgs::msg::Node::OR;
+      node_type = cocg_ast::Node::OR;
     }
   }
 
   if (std::regex_search(expr, match, std::regex("\\(\\s*not[ (]"))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      node_type = plansys2_msgs::msg::Node::NOT;
+      node_type = cocg_ast::Node::NOT;
     }
   }
 
   if (std::regex_search(expr, match, std::regex("\\(\\s*unknown[ (]"))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      node_type = plansys2_msgs::msg::Node::UNKNOWN;
+      node_type = cocg_ast::Node::UNKNOWN;
     }
   }
 
   if (std::regex_search(expr, match, std::regex("\\(\\s*oneof[ (]"))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      node_type = plansys2_msgs::msg::Node::ONE_OF;
+      node_type = cocg_ast::Node::ONE_OF;
     }
   }
 
   std::tuple<uint8_t, int> modifier_search_result = getFunMod(expr);
-  if (std::get<0>(modifier_search_result) != plansys2_msgs::msg::Node::NONE) {
+  if (std::get<0>(modifier_search_result) != cocg_ast::Node::NONE) {
     if (std::get<1>(modifier_search_result) < first) {
       first = std::get<1>(modifier_search_result);
-      node_type = plansys2_msgs::msg::Node::FUNCTION_MODIFIER;
+      node_type = cocg_ast::Node::FUNCTION_MODIFIER;
     }
   }
 
@@ -103,7 +103,7 @@ uint8_t getNodeType(const std::string& expr, uint8_t default_node_type) {
       if (valid_number) {
         if (static_cast<int>(match.position()) < first) {
           first = static_cast<int>(match.position());
-          node_type = plansys2_msgs::msg::Node::NUMBER;
+          node_type = cocg_ast::Node::NUMBER;
         }
         break;
       } else {
@@ -119,10 +119,10 @@ uint8_t getNodeType(const std::string& expr, uint8_t default_node_type) {
   // differentiate between an addition or subtraction expression and a number
   // with a "+" or "-" prefix.
   std::tuple<uint8_t, int> expression_search_result = getExpr(expr);
-  if (std::get<0>(expression_search_result) != plansys2_msgs::msg::Node::NONE) {
+  if (std::get<0>(expression_search_result) != cocg_ast::Node::NONE) {
     if (std::get<1>(expression_search_result) < first) {
       first = std::get<1>(expression_search_result);
-      node_type = plansys2_msgs::msg::Node::EXPRESSION;
+      node_type = cocg_ast::Node::EXPRESSION;
     }
   }
 
@@ -130,7 +130,7 @@ uint8_t getNodeType(const std::string& expr, uint8_t default_node_type) {
 }
 
 std::tuple<uint8_t, int> getExpr(const std::string& input) {
-  auto expr_type = plansys2_msgs::msg::Node::NONE;
+  auto expr_type = cocg_ast::Node::NONE;
 
   std::smatch match;
   int first = std::numeric_limits<int>::max();
@@ -138,63 +138,63 @@ std::tuple<uint8_t, int> getExpr(const std::string& input) {
   if (std::regex_search(input, match, std::regex(">="))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      expr_type = plansys2_msgs::msg::Node::COMP_GE;
+      expr_type = cocg_ast::Node::COMP_GE;
     }
   }
 
   if (std::regex_search(input, match, std::regex(">"))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      expr_type = plansys2_msgs::msg::Node::COMP_GT;
+      expr_type = cocg_ast::Node::COMP_GT;
     }
   }
 
   if (std::regex_search(input, match, std::regex("<="))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      expr_type = plansys2_msgs::msg::Node::COMP_LE;
+      expr_type = cocg_ast::Node::COMP_LE;
     }
   }
 
   if (std::regex_search(input, match, std::regex("<"))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      expr_type = plansys2_msgs::msg::Node::COMP_LT;
+      expr_type = cocg_ast::Node::COMP_LT;
     }
   }
 
   if (std::regex_search(input, match, std::regex("="))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      expr_type = plansys2_msgs::msg::Node::COMP_EQ;
+      expr_type = cocg_ast::Node::COMP_EQ;
     }
   }
 
   if (std::regex_search(input, match, std::regex("\\*"))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      expr_type = plansys2_msgs::msg::Node::ARITH_MULT;
+      expr_type = cocg_ast::Node::ARITH_MULT;
     }
   }
 
   if (std::regex_search(input, match, std::regex("\\/"))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      expr_type = plansys2_msgs::msg::Node::ARITH_DIV;
+      expr_type = cocg_ast::Node::ARITH_DIV;
     }
   }
 
   if (std::regex_search(input, match, std::regex("\\+"))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      expr_type = plansys2_msgs::msg::Node::ARITH_ADD;
+      expr_type = cocg_ast::Node::ARITH_ADD;
     }
   }
 
   if (std::regex_search(input, match, std::regex("\\-"))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      expr_type = plansys2_msgs::msg::Node::ARITH_SUB;
+      expr_type = cocg_ast::Node::ARITH_SUB;
     }
   }
 
@@ -207,7 +207,7 @@ uint8_t getExprType(const std::string& input) {
 }
 
 std::tuple<uint8_t, int> getFunMod(const std::string& input) {
-  auto fun_mod_type = plansys2_msgs::msg::Node::NONE;
+  auto fun_mod_type = cocg_ast::Node::NONE;
 
   std::smatch match;
   int first = std::numeric_limits<int>::max();
@@ -215,35 +215,35 @@ std::tuple<uint8_t, int> getFunMod(const std::string& input) {
   if (std::regex_search(input, match, std::regex("assign"))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      fun_mod_type = plansys2_msgs::msg::Node::ASSIGN;
+      fun_mod_type = cocg_ast::Node::ASSIGN;
     }
   }
 
   if (std::regex_search(input, match, std::regex("increase"))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      fun_mod_type = plansys2_msgs::msg::Node::INCREASE;
+      fun_mod_type = cocg_ast::Node::INCREASE;
     }
   }
 
   if (std::regex_search(input, match, std::regex("decrease"))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      fun_mod_type = plansys2_msgs::msg::Node::DECREASE;
+      fun_mod_type = cocg_ast::Node::DECREASE;
     }
   }
 
   if (std::regex_search(input, match, std::regex("scale-up"))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      fun_mod_type = plansys2_msgs::msg::Node::SCALE_UP;
+      fun_mod_type = cocg_ast::Node::SCALE_UP;
     }
   }
 
   if (std::regex_search(input, match, std::regex("scale-down"))) {
     if (static_cast<int>(match.position()) < first) {
       first = static_cast<int>(match.position());
-      fun_mod_type = plansys2_msgs::msg::Node::SCALE_DOWN;
+      fun_mod_type = cocg_ast::Node::SCALE_DOWN;
     }
   }
 
@@ -326,7 +326,7 @@ std::vector<std::string> getSubExpr(const std::string& expr) {
 }
 
 std::string nameActionsToString(
-    const std::shared_ptr<plansys2_msgs::msg::Action> action) {
+    const std::shared_ptr<cocg_ast::Action> action) {
   std::string ret = action->name;
   for (const auto& param : action->parameters) {
     ret = ret + " " + param.name;
@@ -335,7 +335,7 @@ std::string nameActionsToString(
 }
 
 std::string nameActionsToString(
-    const std::shared_ptr<plansys2_msgs::msg::DurativeAction> action) {
+    const std::shared_ptr<cocg_ast::DurativeAction> action) {
   std::string ret = action->name;
   for (const auto& param : action->parameters) {
     ret = ret + " " + param.name;
@@ -343,7 +343,7 @@ std::string nameActionsToString(
   return ret;
 }
 
-std::string toString(const plansys2_msgs::msg::Tree& tree, uint32_t node_id,
+std::string toString(const cocg_ast::Tree& tree, uint32_t node_id,
                      bool negate) {
   if (node_id >= tree.nodes.size()) {
     return {};
@@ -351,34 +351,34 @@ std::string toString(const plansys2_msgs::msg::Tree& tree, uint32_t node_id,
 
   std::string ret;
   switch (tree.nodes[node_id].node_type) {
-    case plansys2_msgs::msg::Node::PREDICATE:
+    case cocg_ast::Node::PREDICATE:
       ret = toStringPredicate(tree, node_id, negate);
       break;
-    case plansys2_msgs::msg::Node::FUNCTION:
+    case cocg_ast::Node::FUNCTION:
       ret = toStringFunction(tree, node_id, negate);
       break;
-    case plansys2_msgs::msg::Node::NUMBER:
+    case cocg_ast::Node::NUMBER:
       ret = toStringNumber(tree, node_id, negate);
       break;
-    case plansys2_msgs::msg::Node::AND:
+    case cocg_ast::Node::AND:
       ret = toStringAnd(tree, node_id, negate);
       break;
-    case plansys2_msgs::msg::Node::OR:
+    case cocg_ast::Node::OR:
       ret = toStringOr(tree, node_id, negate);
       break;
-    case plansys2_msgs::msg::Node::NOT:
+    case cocg_ast::Node::NOT:
       ret = toStringNot(tree, node_id, negate);
       break;
-    case plansys2_msgs::msg::Node::UNKNOWN:
+    case cocg_ast::Node::UNKNOWN:
       ret = toStringUnknown(tree, node_id);
       break;
-    case plansys2_msgs::msg::Node::ONE_OF:
+    case cocg_ast::Node::ONE_OF:
       ret = toStringOneOf(tree, node_id);
       break;
-    case plansys2_msgs::msg::Node::EXPRESSION:
+    case cocg_ast::Node::EXPRESSION:
       ret = toStringExpression(tree, node_id, negate);
       break;
-    case plansys2_msgs::msg::Node::FUNCTION_MODIFIER:
+    case cocg_ast::Node::FUNCTION_MODIFIER:
       ret = toStringFunctionModifier(tree, node_id, negate);
       break;
     default:
@@ -389,21 +389,21 @@ std::string toString(const plansys2_msgs::msg::Tree& tree, uint32_t node_id,
   return ret;
 }
 
-std::string toString(const plansys2_msgs::msg::Node& node) {
-  if (node.node_type != plansys2_msgs::msg::Node::PREDICATE &&
-      node.node_type != plansys2_msgs::msg::Node::FUNCTION) {
+std::string toString(const cocg_ast::Node& node) {
+  if (node.node_type != cocg_ast::Node::PREDICATE &&
+      node.node_type != cocg_ast::Node::FUNCTION) {
     std::cerr << "Unsupported node to string conversion" << std::endl;
     return {};
   }
 
-  plansys2_msgs::msg::Tree tree;
+  cocg_ast::Tree tree;
   tree.nodes.push_back(node);
 
   return toString(tree);
 }
 
-std::string toStringPredicate(const plansys2_msgs::msg::Tree& tree,
-                              uint32_t node_id, bool negate) {
+std::string toStringPredicate(const cocg_ast::Tree& tree, uint32_t node_id,
+                              bool negate) {
   if (node_id >= tree.nodes.size()) {
     return {};
   }
@@ -429,8 +429,8 @@ std::string toStringPredicate(const plansys2_msgs::msg::Tree& tree,
   return ret;
 }
 
-std::string toStringFunction(const plansys2_msgs::msg::Tree& tree,
-                             uint32_t node_id, bool negate) {
+std::string toStringFunction(const cocg_ast::Tree& tree, uint32_t node_id,
+                             bool negate) {
   if (node_id >= tree.nodes.size()) {
     return {};
   }
@@ -447,8 +447,8 @@ std::string toStringFunction(const plansys2_msgs::msg::Tree& tree,
   return ret;
 }
 
-std::string toStringNumber(const plansys2_msgs::msg::Tree& tree,
-                           uint32_t node_id, bool negate) {
+std::string toStringNumber(const cocg_ast::Tree& tree, uint32_t node_id,
+                           bool negate) {
   if (node_id >= tree.nodes.size()) {
     return {};
   }
@@ -456,7 +456,7 @@ std::string toStringNumber(const plansys2_msgs::msg::Tree& tree,
   return std::to_string(tree.nodes[node_id].value);
 }
 
-std::string toStringAnd(const plansys2_msgs::msg::Tree& tree, uint32_t node_id,
+std::string toStringAnd(const cocg_ast::Tree& tree, uint32_t node_id,
                         bool negate) {
   if (node_id >= tree.nodes.size()) {
     return {};
@@ -482,7 +482,7 @@ std::string toStringAnd(const plansys2_msgs::msg::Tree& tree, uint32_t node_id,
   return ret;
 }
 
-std::string toStringOr(const plansys2_msgs::msg::Tree& tree, uint32_t node_id,
+std::string toStringOr(const cocg_ast::Tree& tree, uint32_t node_id,
                        bool negate) {
   if (node_id >= tree.nodes.size()) {
     return {};
@@ -508,8 +508,7 @@ std::string toStringOr(const plansys2_msgs::msg::Tree& tree, uint32_t node_id,
   return ret;
 }
 
-std::string toStringOneOf(const plansys2_msgs::msg::Tree& tree,
-                          uint32_t node_id) {
+std::string toStringOneOf(const cocg_ast::Tree& tree, uint32_t node_id) {
   if (node_id >= tree.nodes.size()) {
     return {};
   }
@@ -528,8 +527,7 @@ std::string toStringOneOf(const plansys2_msgs::msg::Tree& tree,
   return ret;
 }
 
-std::string toStringUnknown(const plansys2_msgs::msg::Tree& tree,
-                            uint32_t node_id) {
+std::string toStringUnknown(const cocg_ast::Tree& tree, uint32_t node_id) {
   if (node_id >= tree.nodes.size()) {
     return {};
   }
@@ -548,7 +546,7 @@ std::string toStringUnknown(const plansys2_msgs::msg::Tree& tree,
   return ret;
 }
 
-std::string toStringNot(const plansys2_msgs::msg::Tree& tree, uint32_t node_id,
+std::string toStringNot(const cocg_ast::Tree& tree, uint32_t node_id,
                         bool negate) {
   if (node_id >= tree.nodes.size()) {
     return {};
@@ -561,8 +559,8 @@ std::string toStringNot(const plansys2_msgs::msg::Tree& tree, uint32_t node_id,
   return toString(tree, tree.nodes[node_id].children[0], !negate);
 }
 
-std::string toStringExpression(const plansys2_msgs::msg::Tree& tree,
-                               uint32_t node_id, bool negate) {
+std::string toStringExpression(const cocg_ast::Tree& tree, uint32_t node_id,
+                               bool negate) {
   if (node_id >= tree.nodes.size()) {
     return {};
   }
@@ -574,31 +572,31 @@ std::string toStringExpression(const plansys2_msgs::msg::Tree& tree,
   std::string ret;
 
   switch (tree.nodes[node_id].expression_type) {
-    case plansys2_msgs::msg::Node::COMP_GE:
+    case cocg_ast::Node::COMP_GE:
       ret = "(>= ";
       break;
-    case plansys2_msgs::msg::Node::COMP_GT:
+    case cocg_ast::Node::COMP_GT:
       ret = "(> ";
       break;
-    case plansys2_msgs::msg::Node::COMP_LE:
+    case cocg_ast::Node::COMP_LE:
       ret = "(<= ";
       break;
-    case plansys2_msgs::msg::Node::COMP_LT:
+    case cocg_ast::Node::COMP_LT:
       ret = "(< ";
       break;
-    case plansys2_msgs::msg::Node::COMP_EQ:
+    case cocg_ast::Node::COMP_EQ:
       ret = "(= ";
       break;
-    case plansys2_msgs::msg::Node::ARITH_MULT:
+    case cocg_ast::Node::ARITH_MULT:
       ret = "(* ";
       break;
-    case plansys2_msgs::msg::Node::ARITH_DIV:
+    case cocg_ast::Node::ARITH_DIV:
       ret = "(/ ";
       break;
-    case plansys2_msgs::msg::Node::ARITH_ADD:
+    case cocg_ast::Node::ARITH_ADD:
       ret = "(+ ";
       break;
-    case plansys2_msgs::msg::Node::ARITH_SUB:
+    case cocg_ast::Node::ARITH_SUB:
       ret = "(- ";
       break;
     default:
@@ -613,7 +611,7 @@ std::string toStringExpression(const plansys2_msgs::msg::Tree& tree,
   return ret;
 }
 
-std::string toStringFunctionModifier(const plansys2_msgs::msg::Tree& tree,
+std::string toStringFunctionModifier(const cocg_ast::Tree& tree,
                                      uint32_t node_id, bool negate) {
   if (node_id >= tree.nodes.size()) {
     return {};
@@ -626,19 +624,19 @@ std::string toStringFunctionModifier(const plansys2_msgs::msg::Tree& tree,
   std::string ret;
 
   switch (tree.nodes[node_id].modifier_type) {
-    case plansys2_msgs::msg::Node::ASSIGN:
+    case cocg_ast::Node::ASSIGN:
       ret = "(assign ";
       break;
-    case plansys2_msgs::msg::Node::INCREASE:
+    case cocg_ast::Node::INCREASE:
       ret = "(increase ";
       break;
-    case plansys2_msgs::msg::Node::DECREASE:
+    case cocg_ast::Node::DECREASE:
       ret = "(decrease ";
       break;
-    case plansys2_msgs::msg::Node::SCALE_UP:
+    case cocg_ast::Node::SCALE_UP:
       ret = "(scale-up ";
       break;
-    case plansys2_msgs::msg::Node::SCALE_DOWN:
+    case cocg_ast::Node::SCALE_DOWN:
       ret = "(scale-down ";
       break;
     default:
@@ -653,33 +651,33 @@ std::string toStringFunctionModifier(const plansys2_msgs::msg::Tree& tree,
   return ret;
 }
 
-plansys2_msgs::msg::Node::SharedPtr fromString(plansys2_msgs::msg::Tree& tree,
-                                               const std::string& expr,
-                                               bool negate, uint8_t parent) {
+cocg_ast::Node::SharedPtr fromString(cocg_ast::Tree& tree,
+                                     const std::string& expr, bool negate,
+                                     uint8_t parent) {
   std::string wexpr = getReducedString(expr);
 
-  auto default_node_type = plansys2_msgs::msg::Node::NONE;
+  auto default_node_type = cocg_ast::Node::NONE;
   switch (parent) {
-    case plansys2_msgs::msg::Node::AND:
-      default_node_type = plansys2_msgs::msg::Node::PREDICATE;
+    case cocg_ast::Node::AND:
+      default_node_type = cocg_ast::Node::PREDICATE;
       break;
-    case plansys2_msgs::msg::Node::OR:
-      default_node_type = plansys2_msgs::msg::Node::PREDICATE;
+    case cocg_ast::Node::OR:
+      default_node_type = cocg_ast::Node::PREDICATE;
       break;
-    case plansys2_msgs::msg::Node::NOT:
-      default_node_type = plansys2_msgs::msg::Node::PREDICATE;
+    case cocg_ast::Node::NOT:
+      default_node_type = cocg_ast::Node::PREDICATE;
       break;
-    case plansys2_msgs::msg::Node::ONE_OF:
-      default_node_type = plansys2_msgs::msg::Node::PREDICATE;
+    case cocg_ast::Node::ONE_OF:
+      default_node_type = cocg_ast::Node::PREDICATE;
       break;
-    case plansys2_msgs::msg::Node::UNKNOWN:
-      default_node_type = plansys2_msgs::msg::Node::PREDICATE;
+    case cocg_ast::Node::UNKNOWN:
+      default_node_type = cocg_ast::Node::PREDICATE;
       break;
-    case plansys2_msgs::msg::Node::EXPRESSION:
-      default_node_type = plansys2_msgs::msg::Node::FUNCTION;
+    case cocg_ast::Node::EXPRESSION:
+      default_node_type = cocg_ast::Node::FUNCTION;
       break;
-    case plansys2_msgs::msg::Node::FUNCTION_MODIFIER:
-      default_node_type = plansys2_msgs::msg::Node::FUNCTION;
+    case cocg_ast::Node::FUNCTION_MODIFIER:
+      default_node_type = cocg_ast::Node::FUNCTION;
       break;
   }
   auto node_type = getNodeType(wexpr, default_node_type);
@@ -688,8 +686,8 @@ plansys2_msgs::msg::Node::SharedPtr fromString(plansys2_msgs::msg::Tree& tree,
     return nullptr;
   }
   switch (node_type) {
-    case plansys2_msgs::msg::Node::AND: {
-      auto node = std::make_shared<plansys2_msgs::msg::Node>();
+    case cocg_ast::Node::AND: {
+      auto node = std::make_shared<cocg_ast::Node>();
       node->node_type = node_type;
       node->node_id = tree.nodes.size();
       node->negate = negate;
@@ -704,8 +702,8 @@ plansys2_msgs::msg::Node::SharedPtr fromString(plansys2_msgs::msg::Tree& tree,
 
       return node;
     }
-    case plansys2_msgs::msg::Node::OR: {
-      auto node = std::make_shared<plansys2_msgs::msg::Node>();
+    case cocg_ast::Node::OR: {
+      auto node = std::make_shared<cocg_ast::Node>();
       node->node_type = node_type;
       node->node_id = tree.nodes.size();
       node->negate = negate;
@@ -720,8 +718,8 @@ plansys2_msgs::msg::Node::SharedPtr fromString(plansys2_msgs::msg::Tree& tree,
 
       return node;
     }
-    case plansys2_msgs::msg::Node::NOT: {
-      auto node = std::make_shared<plansys2_msgs::msg::Node>();
+    case cocg_ast::Node::NOT: {
+      auto node = std::make_shared<cocg_ast::Node>();
       node->node_type = node_type;
       node->node_id = tree.nodes.size();
       node->negate = negate;
@@ -734,26 +732,24 @@ plansys2_msgs::msg::Node::SharedPtr fromString(plansys2_msgs::msg::Tree& tree,
 
       return node;
     }
-    case plansys2_msgs::msg::Node::PREDICATE: {
-      auto node = std::make_shared<plansys2_msgs::msg::Node>(
-          fromStringPredicate(wexpr));
+    case cocg_ast::Node::PREDICATE: {
+      auto node = std::make_shared<cocg_ast::Node>(fromStringPredicate(wexpr));
       node->node_id = tree.nodes.size();
       node->negate = negate;
       tree.nodes.push_back(*node);
 
       return node;
     }
-    case plansys2_msgs::msg::Node::FUNCTION: {
-      auto node =
-          std::make_shared<plansys2_msgs::msg::Node>(fromStringFunction(wexpr));
+    case cocg_ast::Node::FUNCTION: {
+      auto node = std::make_shared<cocg_ast::Node>(fromStringFunction(wexpr));
       node->node_id = tree.nodes.size();
       node->negate = negate;
       tree.nodes.push_back(*node);
 
       return node;
     }
-    case plansys2_msgs::msg::Node::EXPRESSION: {
-      auto node = std::make_shared<plansys2_msgs::msg::Node>();
+    case cocg_ast::Node::EXPRESSION: {
+      auto node = std::make_shared<cocg_ast::Node>();
       node->node_type = node_type;
       node->expression_type = getExprType(wexpr);
       node->node_id = tree.nodes.size();
@@ -769,8 +765,8 @@ plansys2_msgs::msg::Node::SharedPtr fromString(plansys2_msgs::msg::Tree& tree,
 
       return node;
     }
-    case plansys2_msgs::msg::Node::FUNCTION_MODIFIER: {
-      auto node = std::make_shared<plansys2_msgs::msg::Node>();
+    case cocg_ast::Node::FUNCTION_MODIFIER: {
+      auto node = std::make_shared<cocg_ast::Node>();
       node->node_type = node_type;
       node->modifier_type = getFunModType(wexpr);
       node->node_id = tree.nodes.size();
@@ -786,8 +782,8 @@ plansys2_msgs::msg::Node::SharedPtr fromString(plansys2_msgs::msg::Tree& tree,
 
       return node;
     }
-    case plansys2_msgs::msg::Node::NUMBER: {
-      auto node = std::make_shared<plansys2_msgs::msg::Node>();
+    case cocg_ast::Node::NUMBER: {
+      auto node = std::make_shared<cocg_ast::Node>();
       node->node_type = node_type;
       node->node_id = tree.nodes.size();
       node->value = std::stod(wexpr);
@@ -796,8 +792,8 @@ plansys2_msgs::msg::Node::SharedPtr fromString(plansys2_msgs::msg::Tree& tree,
 
       return node;
     }
-    case plansys2_msgs::msg::Node::ONE_OF: {
-      auto node = std::make_shared<plansys2_msgs::msg::Node>();
+    case cocg_ast::Node::ONE_OF: {
+      auto node = std::make_shared<cocg_ast::Node>();
       node->node_type = node_type;
       node->node_id = tree.nodes.size();
       node->negate = negate;
@@ -812,8 +808,8 @@ plansys2_msgs::msg::Node::SharedPtr fromString(plansys2_msgs::msg::Tree& tree,
 
       return node;
     }
-    case plansys2_msgs::msg::Node::UNKNOWN: {
-      auto node = std::make_shared<plansys2_msgs::msg::Node>();
+    case cocg_ast::Node::UNKNOWN: {
+      auto node = std::make_shared<cocg_ast::Node>();
       node->node_type = node_type;
       node->node_id = tree.nodes.size();
       node->negate = negate;
@@ -838,16 +834,16 @@ plansys2_msgs::msg::Node::SharedPtr fromString(plansys2_msgs::msg::Tree& tree,
   return nullptr;
 }
 
-plansys2_msgs::msg::Tree fromString(const std::string& expr, bool negate,
-                                    uint8_t parent) {
-  plansys2_msgs::msg::Tree tree;
+cocg_ast::Tree fromString(const std::string& expr, bool negate,
+                          uint8_t parent) {
+  cocg_ast::Tree tree;
   fromString(tree, expr, negate, parent);
   return tree;
 }
 
-plansys2_msgs::msg::Node fromStringPredicate(const std::string& predicate) {
-  plansys2_msgs::msg::Node ret;
-  ret.node_type = plansys2_msgs::msg::Node::PREDICATE;
+cocg_ast::Node fromStringPredicate(const std::string& predicate) {
+  cocg_ast::Node ret;
+  ret.node_type = cocg_ast::Node::PREDICATE;
 
   std::vector<std::string> tokens;
   size_t start = 0, end = 0;
@@ -869,7 +865,7 @@ plansys2_msgs::msg::Node fromStringPredicate(const std::string& predicate) {
   tokens.back().pop_back();
 
   for (size_t i = 1; i < tokens.size(); i++) {
-    plansys2_msgs::msg::Param param;
+    cocg_ast::Param param;
     param.name = tokens[i];
     ret.parameters.push_back(param);
   }
@@ -879,9 +875,9 @@ plansys2_msgs::msg::Node fromStringPredicate(const std::string& predicate) {
   return ret;
 }
 
-plansys2_msgs::msg::Node fromStringFunction(const std::string& function) {
-  plansys2_msgs::msg::Node ret;
-  ret.node_type = plansys2_msgs::msg::Node::FUNCTION;
+cocg_ast::Node fromStringFunction(const std::string& function) {
+  cocg_ast::Node ret;
+  ret.node_type = cocg_ast::Node::FUNCTION;
 
   std::regex name_regexp("[a-zA-Z][a-zA-Z0-9_\\-]*");
   std::regex number_regexp("[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)");
@@ -895,7 +891,7 @@ plansys2_msgs::msg::Node fromStringFunction(const std::string& function) {
   }
 
   while (std::regex_search(temp, match, name_regexp)) {
-    plansys2_msgs::msg::Param param;
+    cocg_ast::Param param;
     param.name = match.str(0);
     ret.parameters.push_back(param);
     temp = match.suffix().str();
@@ -908,21 +904,21 @@ plansys2_msgs::msg::Node fromStringFunction(const std::string& function) {
   return ret;
 }
 
-plansys2_msgs::msg::Param fromStringParam(const std::string& name,
-                                          const std::string& type) {
-  plansys2_msgs::msg::Param ret;
+cocg_ast::Param fromStringParam(const std::string& name,
+                                const std::string& type) {
+  cocg_ast::Param ret;
   ret.name = name;
   ret.type = type;
   return ret;
 }
 
-plansys2_msgs::msg::Tree fromPredicates(const std::vector<std::string>& preds) {
-  plansys2_msgs::msg::Node node;
-  node.node_type = plansys2_msgs::msg::Node::AND;
+cocg_ast::Tree fromPredicates(const std::vector<std::string>& preds) {
+  cocg_ast::Node node;
+  node.node_type = cocg_ast::Node::AND;
   node.node_id = 0;
   node.negate = false;
 
-  plansys2_msgs::msg::Tree tree;
+  cocg_ast::Tree tree;
   tree.nodes.push_back(node);
 
   for (const auto& pred : preds) {
@@ -936,23 +932,22 @@ plansys2_msgs::msg::Tree fromPredicates(const std::vector<std::string>& preds) {
   return tree;
 }
 
-plansys2_msgs::msg::Tree::SharedPtr fromSubtree(
-    const plansys2_msgs::msg::Tree& subtree, uint8_t node_type) {
-  std::vector<plansys2_msgs::msg::Tree> temp;
+cocg_ast::Tree::SharedPtr fromSubtree(const cocg_ast::Tree& subtree,
+                                      uint8_t node_type) {
+  std::vector<cocg_ast::Tree> temp;
   temp.push_back(subtree);
   return fromSubtrees(temp, node_type);
 }
 
-plansys2_msgs::msg::Tree::SharedPtr fromSubtrees(
-    const std::vector<plansys2_msgs::msg::Tree>& subtrees, uint8_t node_type) {
-  if (node_type != plansys2_msgs::msg::Node::AND &&
-      node_type != plansys2_msgs::msg::Node::OR &&
-      node_type != plansys2_msgs::msg::Node::NOT) {
+cocg_ast::Tree::SharedPtr fromSubtrees(
+    const std::vector<cocg_ast::Tree>& subtrees, uint8_t node_type) {
+  if (node_type != cocg_ast::Node::AND && node_type != cocg_ast::Node::OR &&
+      node_type != cocg_ast::Node::NOT) {
     std::cerr << "fromSubtrees: Unsupported root type." << std::endl;
     return nullptr;
   }
 
-  if (node_type == plansys2_msgs::msg::Node::NOT && subtrees.size() > 1) {
+  if (node_type == cocg_ast::Node::NOT && subtrees.size() > 1) {
     std::cerr << "fromSubtree: A NOT node can only operate on single subtree."
               << std::endl;
     return nullptr;
@@ -963,12 +958,12 @@ plansys2_msgs::msg::Tree::SharedPtr fromSubtrees(
     return nullptr;
   }
 
-  plansys2_msgs::msg::Node node;
+  cocg_ast::Node node;
   node.node_type = node_type;
   node.node_id = 0;
   node.negate = false;
 
-  auto tree = std::make_shared<plansys2_msgs::msg::Tree>();
+  auto tree = std::make_shared<cocg_ast::Tree>();
   tree->nodes.push_back(node);
 
   for (unsigned i = 0; i < subtrees.size(); ++i) {
@@ -982,7 +977,7 @@ plansys2_msgs::msg::Tree::SharedPtr fromSubtrees(
         tree->nodes[tree_size + j].children[k] += tree_size;
       }
     }
-    if (node_type == plansys2_msgs::msg::Node::NOT) {
+    if (node_type == cocg_ast::Node::NOT) {
       tree->nodes[1].negate = true;
       break;
     }
@@ -991,13 +986,13 @@ plansys2_msgs::msg::Tree::SharedPtr fromSubtrees(
   return tree;
 }
 
-std::vector<uint32_t> getSubtreeIds(const plansys2_msgs::msg::Tree& tree) {
+std::vector<uint32_t> getSubtreeIds(const cocg_ast::Tree& tree) {
   if (tree.nodes.empty()) {  // No expression
     return {};
   }
 
   switch (tree.nodes.front().node_type) {
-    case plansys2_msgs::msg::Node::AND: {
+    case cocg_ast::Node::AND: {
       return tree.nodes.front().children;
     }
     default:
@@ -1008,12 +1003,11 @@ std::vector<uint32_t> getSubtreeIds(const plansys2_msgs::msg::Tree& tree) {
   return {};
 }
 
-std::vector<plansys2_msgs::msg::Tree> getSubtrees(
-    const plansys2_msgs::msg::Tree& tree) {
+std::vector<cocg_ast::Tree> getSubtrees(const cocg_ast::Tree& tree) {
   std::vector<uint32_t> node_ids = parser::pddl::getSubtreeIds(tree);
-  std::vector<plansys2_msgs::msg::Tree> subtrees;
+  std::vector<cocg_ast::Tree> subtrees;
   for (auto node_id : node_ids) {
-    plansys2_msgs::msg::Tree subtree;
+    cocg_ast::Tree subtree;
     subtree.nodes.push_back(tree.nodes[node_id]);
     subtree.nodes[0].node_id = 0;
     subtree.nodes[0].children.clear();
@@ -1023,8 +1017,7 @@ std::vector<plansys2_msgs::msg::Tree> getSubtrees(
   return subtrees;
 }
 
-void getSubtreeChildren(plansys2_msgs::msg::Tree& subtree,
-                        const plansys2_msgs::msg::Tree& tree,
+void getSubtreeChildren(cocg_ast::Tree& subtree, const cocg_ast::Tree& tree,
                         uint32_t tree_parent, uint32_t subtree_parent) {
   for (auto child_id : tree.nodes[tree_parent].children) {
     auto subtree_size = subtree.nodes.size();
@@ -1036,52 +1029,51 @@ void getSubtreeChildren(plansys2_msgs::msg::Tree& subtree,
   }
 }
 
-void getPredicates(std::vector<plansys2_msgs::msg::Node>& predicates,
-                   const plansys2_msgs::msg::Tree& tree, uint32_t node_id,
-                   bool negate) {
+void getPredicates(std::vector<cocg_ast::Node>& predicates,
+                   const cocg_ast::Tree& tree, uint32_t node_id, bool negate) {
   if (node_id >= tree.nodes.size()) {
     return;
   }
 
   switch (tree.nodes[node_id].node_type) {
-    case plansys2_msgs::msg::Node::FUNCTION:
-    case plansys2_msgs::msg::Node::EXPRESSION:
-    case plansys2_msgs::msg::Node::FUNCTION_MODIFIER:
-    case plansys2_msgs::msg::Node::NUMBER:
+    case cocg_ast::Node::FUNCTION:
+    case cocg_ast::Node::EXPRESSION:
+    case cocg_ast::Node::FUNCTION_MODIFIER:
+    case cocg_ast::Node::NUMBER:
       // These cases have no meaning
       break;
-    case plansys2_msgs::msg::Node::AND:
+    case cocg_ast::Node::AND:
       for (auto child_id : tree.nodes[node_id].children) {
         getPredicates(predicates, tree, child_id, negate);
       }
       break;
-    case plansys2_msgs::msg::Node::OR:
+    case cocg_ast::Node::OR:
       for (auto child_id : tree.nodes[node_id].children) {
         getPredicates(predicates, tree, child_id, negate);
       }
       break;
-    case plansys2_msgs::msg::Node::NOT:
+    case cocg_ast::Node::NOT:
       getPredicates(predicates, tree, tree.nodes[node_id].children[0], !negate);
       break;
-    case plansys2_msgs::msg::Node::UNKNOWN:
+    case cocg_ast::Node::UNKNOWN:
       for (auto child_id : tree.nodes[node_id].children) {
         getPredicates(predicates, tree, child_id, negate);
       }
       break;
-    case plansys2_msgs::msg::Node::ONE_OF:
+    case cocg_ast::Node::ONE_OF:
       for (auto child_id : tree.nodes[node_id].children) {
         getPredicates(predicates, tree, child_id, negate);
       }
       break;
-    case plansys2_msgs::msg::Node::ACTION:
+    case cocg_ast::Node::ACTION:
       for (auto child_id : tree.nodes[node_id].children) {
         getPredicates(predicates, tree, child_id, negate);
       }
       break;
-    case plansys2_msgs::msg::Node::PREDICATE:
-      plansys2_msgs::msg::Node pred = tree.nodes[node_id];
+    case cocg_ast::Node::PREDICATE:
+      cocg_ast::Node pred = tree.nodes[node_id];
       if (std::find_if(predicates.begin(), predicates.end(),
-                       [pred](const plansys2_msgs::msg::Node& p1) {
+                       [pred](const cocg_ast::Node& p1) {
                          return p1 == pred;
                        }) == predicates.end()) {
         pred.negate = negate;
@@ -1091,37 +1083,36 @@ void getPredicates(std::vector<plansys2_msgs::msg::Node>& predicates,
   }
 }
 
-void getFunctions(std::vector<plansys2_msgs::msg::Node>& functions,
-                  const plansys2_msgs::msg::Tree& tree, uint32_t node_id,
-                  bool negate) {
+void getFunctions(std::vector<cocg_ast::Node>& functions,
+                  const cocg_ast::Tree& tree, uint32_t node_id, bool negate) {
   if (node_id >= tree.nodes.size()) {
     return;
   }
 
   switch (tree.nodes[node_id].node_type) {
-    case plansys2_msgs::msg::Node::AND:
-    case plansys2_msgs::msg::Node::OR:
-    case plansys2_msgs::msg::Node::NOT:
-    case plansys2_msgs::msg::Node::NUMBER:
+    case cocg_ast::Node::AND:
+    case cocg_ast::Node::OR:
+    case cocg_ast::Node::NOT:
+    case cocg_ast::Node::NUMBER:
       // These cases have no meaning
       break;
-    case plansys2_msgs::msg::Node::ACTION:
+    case cocg_ast::Node::ACTION:
       for (auto child_id : tree.nodes[node_id].children) {
         getFunctions(functions, tree, child_id, negate);
       }
       break;
-    case plansys2_msgs::msg::Node::EXPRESSION:
+    case cocg_ast::Node::EXPRESSION:
       for (auto child_id : tree.nodes[node_id].children) {
         getFunctions(functions, tree, child_id, negate);
       }
       break;
-    case plansys2_msgs::msg::Node::FUNCTION_MODIFIER:
+    case cocg_ast::Node::FUNCTION_MODIFIER:
       for (auto child_id : tree.nodes[node_id].children) {
         getFunctions(functions, tree, child_id, negate);
       }
       break;
-    case plansys2_msgs::msg::Node::FUNCTION:
-      plansys2_msgs::msg::Node func = tree.nodes[node_id];
+    case cocg_ast::Node::FUNCTION:
+      cocg_ast::Node func = tree.nodes[node_id];
       if (std::find_if(functions.begin(), functions.end(),
                        std::bind(&checkNodeEquality, std::placeholders::_1,
                                  func)) == functions.end()) {
@@ -1132,8 +1123,8 @@ void getFunctions(std::vector<plansys2_msgs::msg::Node>& functions,
   }
 }
 
-bool checkTreeEquality(const plansys2_msgs::msg::Tree& first,
-                       const plansys2_msgs::msg::Tree& second) {
+bool checkTreeEquality(const cocg_ast::Tree& first,
+                       const cocg_ast::Tree& second) {
   if (first.nodes.size() != second.nodes.size()) {
     return false;
   }
@@ -1147,33 +1138,33 @@ bool checkTreeEquality(const plansys2_msgs::msg::Tree& first,
   return true;
 }
 
-bool checkNodeEquality(const plansys2_msgs::msg::Node& first,
-                       const plansys2_msgs::msg::Node& second) {
+bool checkNodeEquality(const cocg_ast::Node& first,
+                       const cocg_ast::Node& second) {
   if (first.node_type != second.node_type) {
     return false;
   }
 
-  if (first.node_type == plansys2_msgs::msg::Node::ACTION ||
-      first.node_type == plansys2_msgs::msg::Node::PREDICATE ||
-      first.node_type == plansys2_msgs::msg::Node::FUNCTION) {
+  if (first.node_type == cocg_ast::Node::ACTION ||
+      first.node_type == cocg_ast::Node::PREDICATE ||
+      first.node_type == cocg_ast::Node::FUNCTION) {
     if (first.name != second.name) {
       return false;
     }
   }
 
-  if (first.node_type == plansys2_msgs::msg::Node::EXPRESSION) {
+  if (first.node_type == cocg_ast::Node::EXPRESSION) {
     if (first.expression_type != second.expression_type) {
       return false;
     }
   }
 
-  if (first.node_type == plansys2_msgs::msg::Node::FUNCTION_MODIFIER) {
+  if (first.node_type == cocg_ast::Node::FUNCTION_MODIFIER) {
     if (first.modifier_type != second.modifier_type) {
       return false;
     }
   }
 
-  if (first.node_type == plansys2_msgs::msg::Node::NUMBER) {
+  if (first.node_type == cocg_ast::Node::NUMBER) {
     if (abs(first.value - second.value) > 1e-9) {
       return false;
     }
@@ -1196,8 +1187,8 @@ bool checkNodeEquality(const plansys2_msgs::msg::Node& first,
   return true;
 }
 
-bool checkParamEquality(const plansys2_msgs::msg::Param& first,
-                        const plansys2_msgs::msg::Param& second) {
+bool checkParamEquality(const cocg_ast::Param& first,
+                        const cocg_ast::Param& second) {
   if (first.name != second.name) {
     return false;
   }
@@ -1205,17 +1196,16 @@ bool checkParamEquality(const plansys2_msgs::msg::Param& first,
   return true;
 }
 
-bool empty(const plansys2_msgs::msg::Tree& tree) {
+bool empty(const cocg_ast::Tree& tree) {
   if (tree.nodes.empty()) {
     return true;
   }
 
-  if ((tree.nodes[0].node_type == plansys2_msgs::msg::Node::AND ||
-       tree.nodes[0].node_type == plansys2_msgs::msg::Node::OR ||
-       tree.nodes[0].node_type == plansys2_msgs::msg::Node::NOT ||
-       tree.nodes[0].node_type == plansys2_msgs::msg::Node::EXPRESSION ||
-       tree.nodes[0].node_type ==
-           plansys2_msgs::msg::Node::FUNCTION_MODIFIER) &&
+  if ((tree.nodes[0].node_type == cocg_ast::Node::AND ||
+       tree.nodes[0].node_type == cocg_ast::Node::OR ||
+       tree.nodes[0].node_type == cocg_ast::Node::NOT ||
+       tree.nodes[0].node_type == cocg_ast::Node::EXPRESSION ||
+       tree.nodes[0].node_type == cocg_ast::Node::FUNCTION_MODIFIER) &&
       tree.nodes[0].children.empty()) {
     return true;
   }

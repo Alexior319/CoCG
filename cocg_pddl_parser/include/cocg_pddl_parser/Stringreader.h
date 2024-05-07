@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COCG_PDDL_PARSER_STRINGREADER_H_
+#define COCG_PDDL_PARSER_STRINGREADER_H_
 
 #include <sstream>
 #include <stdexcept>
@@ -217,3 +218,5 @@ class Stringreader {
 
 }  // namespace pddl
 }  // namespace parser
+
+#endif  // COCG_PDDL_PARSER_STRINGREADER_H_

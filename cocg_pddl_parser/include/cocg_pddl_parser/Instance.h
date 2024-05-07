@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COCG_PDDL_PARSER_INSTANCE_H_
+#define COCG_PDDL_PARSER_INSTANCE_H_
 
 #include "cocg_pddl_parser/Domain.h"
 // #undef DOMAIN_DEBUG
@@ -395,3 +396,5 @@ class Instance {
 
 }  // namespace pddl
 }  // namespace parser
+
+#endif  // COCG_PDDL_PARSER_INSTANCE_H_

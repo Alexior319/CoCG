@@ -25,16 +25,15 @@ void FunctionExpression::PDDLPrint(std::ostream &s, unsigned indent,
   s << " )";
 }
 
-plansys2_msgs::msg::Node::SharedPtr FunctionExpression::getTree(
-    plansys2_msgs::msg::Tree &tree, const Domain &d,
+cocg_ast::Node::SharedPtr FunctionExpression::getTree(
+    cocg_ast::Tree &tree, const Domain &d,
     const std::vector<std::string> &replace) const {
-  plansys2_msgs::msg::Node::SharedPtr node =
-      std::make_shared<plansys2_msgs::msg::Node>();
-  node->node_type = plansys2_msgs::msg::Node::FUNCTION;
+  cocg_ast::Node::SharedPtr node = std::make_shared<cocg_ast::Node>();
+  node->node_type = cocg_ast::Node::FUNCTION;
   node->node_id = tree.nodes.size();
   node->name = fun->name;
   for (unsigned i = 0; i < fun->params.size(); ++i) {
-    plansys2_msgs::msg::Param param;
+    cocg_ast::Param param;
     if (i < replace.size()) {
       param.name = replace[fun->params[i]];
     } else {

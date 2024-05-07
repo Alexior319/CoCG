@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COCG_PDDL_PARSER_CONDITER_H_
+#define COCG_PDDL_PARSER_CONDITER_H_
 
 #include "cocg_pddl_parser/Condition.h"
 
@@ -36,3 +37,5 @@ class CondIter : public std::iterator<std::input_iterator_tag, Condition *> {
 
 }  // namespace pddl
 }  // namespace parser
+
+#endif  // COCG_PDDL_PARSER_CONDITER_H_

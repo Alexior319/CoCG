@@ -1,8 +1,10 @@
-ament_add_gtest(pddl_parser_test pddl_parser_test.cpp TIMEOUT 120)
-ament_target_dependencies(pddl_parser_test ${dependencies})
-target_link_libraries(pddl_parser_test cocg_pddl_parser)
+enable_testing()
 
-install(DIRECTORY
-  pddl
-  DESTINATION share/${PROJECT_NAME}
+add_executable(pddl_parser_test pddl_parser_test.cpp)
+
+target_link_libraries(pddl_parser_test cocg_pddl_parser gtest gtest_main)
+
+add_test(
+  NAME pddl_parser_test
+  COMMAND pddl_parser_test
 )

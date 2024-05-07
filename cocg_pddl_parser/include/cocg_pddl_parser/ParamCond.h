@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COCG_PDDL_PARSER_PARAMCOND_H_
+#define COCG_PDDL_PARSER_PARAMCOND_H_
 
 #include "cocg_pddl_parser/Basic.h"
 #include "cocg_pddl_parser/Condition.h"
@@ -33,3 +34,5 @@ typedef std::vector<ParamCond*> ParamCondVec;
 
 }  // namespace pddl
 }  // namespace parser
+
+#endif  // COCG_PDDL_PARSER_PARAMCOND_H_

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COCG_PDDL_PARSER_BASIC_H_
+#define COCG_PDDL_PARSER_BASIC_H_
 
 #include <algorithm>
 #include <cmath>
@@ -91,3 +92,5 @@ std::ostream &operator<<(std::ostream &stream, const std::vector<T> &v) {
 inline void tabindent(std::ostream &stream, unsigned indent) {
   for (unsigned i = 0; i < indent; ++i) stream << "\t";
 }
+
+#endif  // COCG_PDDL_PARSER_BASIC_H_

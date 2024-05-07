@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COCG_PDDL_PARSER_DOMAIN_H_
+#define COCG_PDDL_PARSER_DOMAIN_H_
 
 #include "cocg_pddl_parser/And.h"
 #include "cocg_pddl_parser/Derived.h"
@@ -797,3 +798,5 @@ class Domain {
 
 }  // namespace pddl
 }  // namespace parser
+
+#endif  // COCG_PDDL_PARSER_DOMAIN_H_

@@ -60,8 +60,8 @@ void TemporalAction::PDDLPrint(std::ostream &s, unsigned indent,
   s << ")\n";
 }
 
-plansys2_msgs::msg::Node::SharedPtr TemporalAction::getTree(
-    plansys2_msgs::msg::Tree &tree, const Domain &d,
+cocg_ast::Node::SharedPtr TemporalAction::getTree(
+    cocg_ast::Tree &tree, const Domain &d,
     const std::vector<std::string> &replace) const {
   throw UnsupportedConstruct("TemporalAction");
 }

@@ -1,8 +1,9 @@
-#pragma once
+#ifndef COCG_PDDL_PARSER_AND_H_
+#define COCG_PDDL_PARSER_AND_H_
 
+#include "cocg_ast/tree.h"
+#include "cocg_ast/node.h"
 #include "cocg_pddl_parser/Condition.h"
-#include "plansys2_msgs/msg/node.hpp"
-#include "plansys2_msgs/msg/tree.hpp"
 
 namespace parser {
 namespace pddl {
@@ -35,8 +36,8 @@ class And : public Condition {
                  const TokenStruct<std::string>& ts,
                  const Domain& d) const override;
 
-  plansys2_msgs::msg::Node::SharedPtr getTree(
-      plansys2_msgs::msg::Tree& tree, const Domain& d,
+  cocg_ast::Node::SharedPtr getTree(
+      cocg_ast::Tree& tree, const Domain& d,
       const std::vector<std::string>& replace = {}) const override;
 
   void parse(Stringreader& f, TokenStruct<std::string>& ts, Domain& d);
@@ -54,3 +55,5 @@ class And : public Condition {
 
 }  // namespace pddl
 }  // namespace parser
+
+#endif  // COCG_PDDL_PARSER_AND_H_

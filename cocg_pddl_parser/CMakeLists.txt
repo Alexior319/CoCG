@@ -2,20 +2,16 @@ project(cocg_pddl_parser)
 
 cmake_minimum_required(VERSION 3.5)
 
-find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(plansys2_msgs REQUIRED)
-find_package(std_msgs REQUIRED)
-
 set(CMAKE_CXX_STANDARD 17)
 
 set(dependencies
-    rclcpp
-    plansys2_msgs
-    std_msgs
+
 )
 
-include_directories(include)
+include_directories(
+  include
+  ${CMAKE_SOURCE_DIR}/cocg_ast/include
+)
 
 set(PDDL-PARSER-SOURCES
   src/cocg_pddl_parser/Action.cpp
@@ -41,34 +37,28 @@ set(PDDL-PARSER-SOURCES
 )
 
 add_library(${PROJECT_NAME} SHARED ${PDDL-PARSER-SOURCES})
-ament_target_dependencies(${PROJECT_NAME} rclcpp plansys2_msgs)
 
 add_executable(parser src/parser.cpp)
 target_link_libraries(parser ${PROJECT_NAME})
 
 install(DIRECTORY include/
-  DESTINATION include/
+  DESTINATION ${CMAKE_BINARY_DIR}/include
 )
 
 install(TARGETS
   ${PROJECT_NAME}
   parser
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION lib/${PROJECT_NAME}
+  ARCHIVE DESTINATION ${CMAKE_BINARY_DIR}
+  LIBRARY DESTINATION ${CMAKE_BINARY_DIR}
+  RUNTIME DESTINATION ${CMAKE_BINARY_DIR}
+)
+
+file(COPY
+  test/pddl
+  DESTINATION ${CMAKE_BINARY_DIR}/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)
-  # find_package(ament_lint_auto REQUIRED)
-  # ament_lint_auto_find_test_dependencies()
-  find_package(ament_cmake_gtest REQUIRED)
-  find_package(ament_index_cpp REQUIRED)
-  set(dependencies ${dependencies} ament_index_cpp)
   add_subdirectory(test)
 endif()
 
-ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME})
-ament_export_dependencies(${dependencies})
-
-ament_package()

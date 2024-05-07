@@ -26,8 +26,8 @@ void When::PDDLPrint(std::ostream& s, unsigned indent,
   s << ")";
 }
 
-plansys2_msgs::msg::Node::SharedPtr When::getTree(
-    plansys2_msgs::msg::Tree& tree, const Domain& d,
+cocg_ast::Node::SharedPtr When::getTree(
+    cocg_ast::Tree& tree, const Domain& d,
     const std::vector<std::string>& replace) const {
   throw UnsupportedConstruct("When");
 }

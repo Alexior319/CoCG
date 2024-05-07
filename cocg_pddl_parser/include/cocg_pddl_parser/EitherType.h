@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COCG_PDDL_PARSER_EITHERTYPE_H_
+#define COCG_PDDL_PARSER_EITHERTYPE_H_
 
 #include "cocg_pddl_parser/Type.h"
 
@@ -26,3 +27,5 @@ class EitherType : public Type {
 
 }  // namespace pddl
 }  // namespace parser
+
+#endif  // COCG_PDDL_PARSER_EITHERTYPE_H_

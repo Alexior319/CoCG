@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PDDL_PARSER_TOKEN_STRUCT_H_
+#define PDDL_PARSER_TOKEN_STRUCT_H_
+
 #include <map>
 
 #include "cocg_pddl_parser/Basic.h"
@@ -75,3 +77,5 @@ class TokenStruct {
 
 }  // namespace pddl
 }  // namespace parser
+
+#endif  // PDDL_PARSER_TOKEN_STRUCT_H_

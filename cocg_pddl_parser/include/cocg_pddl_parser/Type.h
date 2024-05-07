@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COCG_PDDL_PARSER_TYPE_H_
+#define COCG_PDDL_PARSER_TYPE_H_
 
 #include "cocg_pddl_parser/TokenStruct.h"
 
@@ -162,3 +163,5 @@ inline std::ostream& operator<<(std::ostream& stream, const Type* t) {
 
 }  // namespace pddl
 }  // namespace parser
+
+#endif  // COCG_PDDL_PARSER_TYPE_H_

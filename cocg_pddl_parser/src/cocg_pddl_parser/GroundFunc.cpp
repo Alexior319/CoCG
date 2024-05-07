@@ -26,8 +26,8 @@ void GroundFunc<int>::PDDLPrint(std::ostream &s, unsigned indent,
 }
 
 template <>
-plansys2_msgs::msg::Node::SharedPtr GroundFunc<double>::getTree(
-    plansys2_msgs::msg::Tree &tree, const Domain &d,
+cocg_ast::Node::SharedPtr GroundFunc<double>::getTree(
+    cocg_ast::Tree &tree, const Domain &d,
     const std::vector<std::string> &replace) const {
   auto node = TypeGround::getTree(tree, d, replace);
   node->value = value;
@@ -35,8 +35,8 @@ plansys2_msgs::msg::Node::SharedPtr GroundFunc<double>::getTree(
 }
 
 template <>
-plansys2_msgs::msg::Node::SharedPtr GroundFunc<int>::getTree(
-    plansys2_msgs::msg::Tree &tree, const Domain &d,
+cocg_ast::Node::SharedPtr GroundFunc<int>::getTree(
+    cocg_ast::Tree &tree, const Domain &d,
     const std::vector<std::string> &replace) const {
   auto node = TypeGround::getTree(tree, d, replace);
   node->value = value;

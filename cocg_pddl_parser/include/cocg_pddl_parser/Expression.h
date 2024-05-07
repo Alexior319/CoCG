@@ -1,8 +1,9 @@
-#pragma once
+#ifndef COCG_PDDL_PARSER_EXPRESSION_H_
+#define COCG_PDDL_PARSER_EXPRESSION_H_
 
+#include "cocg_ast/node.h"
+#include "cocg_ast/tree.h"
 #include "cocg_pddl_parser/Condition.h"
-#include "plansys2_msgs/msg/node.hpp"
-#include "plansys2_msgs/msg/tree.hpp"
 
 namespace parser {
 namespace pddl {
@@ -69,22 +70,19 @@ class CompositeExpression : public Expression {
     s << " )";
   }
 
-  plansys2_msgs::msg::Node::SharedPtr getTree(
-      plansys2_msgs::msg::Tree& tree, const Domain& d,
+  cocg_ast::Node::SharedPtr getTree(
+      cocg_ast::Tree& tree, const Domain& d,
       const std::vector<std::string>& replace = {}) const override {
-    plansys2_msgs::msg::Node::SharedPtr node =
-        std::make_shared<plansys2_msgs::msg::Node>();
-    node->node_type = plansys2_msgs::msg::Node::EXPRESSION;
+    cocg_ast::Node::SharedPtr node = std::make_shared<cocg_ast::Node>();
+    node->node_type = cocg_ast::Node::EXPRESSION;
     node->expression_type = getExprType(op);
     node->node_id = tree.nodes.size();
     tree.nodes.push_back(*node);
 
-    plansys2_msgs::msg::Node::SharedPtr left_child =
-        left->getTree(tree, d, replace);
+    cocg_ast::Node::SharedPtr left_child = left->getTree(tree, d, replace);
     tree.nodes[node->node_id].children.push_back(left_child->node_id);
 
-    plansys2_msgs::msg::Node::SharedPtr right_child =
-        right->getTree(tree, d, replace);
+    cocg_ast::Node::SharedPtr right_child = right->getTree(tree, d, replace);
     tree.nodes[node->node_id].children.push_back(right_child->node_id);
 
     return node;
@@ -151,8 +149,8 @@ class FunctionExpression : public Expression {
                  const TokenStruct<std::string>& ts,
                  const Domain& d) const override;
 
-  plansys2_msgs::msg::Node::SharedPtr getTree(
-      plansys2_msgs::msg::Tree& tree, const Domain& d,
+  cocg_ast::Node::SharedPtr getTree(
+      cocg_ast::Tree& tree, const Domain& d,
       const std::vector<std::string>& replace = {}) const override;
 
   double evaluate() { return 1; }
@@ -184,12 +182,11 @@ class ValueExpression : public Expression {
     s << value;
   }
 
-  plansys2_msgs::msg::Node::SharedPtr getTree(
-      plansys2_msgs::msg::Tree& tree, const Domain& d,
+  cocg_ast::Node::SharedPtr getTree(
+      cocg_ast::Tree& tree, const Domain& d,
       const std::vector<std::string>& replace = {}) const override {
-    plansys2_msgs::msg::Node::SharedPtr node =
-        std::make_shared<plansys2_msgs::msg::Node>();
-    node->node_type = plansys2_msgs::msg::Node::NUMBER;
+    cocg_ast::Node::SharedPtr node = std::make_shared<cocg_ast::Node>();
+    node->node_type = cocg_ast::Node::NUMBER;
     node->node_id = tree.nodes.size();
     node->value = value;
     tree.nodes.push_back(*node);
@@ -212,8 +209,8 @@ class DurationExpression : public Expression {
     s << "?duration";
   }
 
-  plansys2_msgs::msg::Node::SharedPtr getTree(
-      plansys2_msgs::msg::Tree& tree, const Domain& d,
+  cocg_ast::Node::SharedPtr getTree(
+      cocg_ast::Tree& tree, const Domain& d,
       const std::vector<std::string>& replace = {}) const override {
     throw UnsupportedConstruct("DurationExpression");
   }
@@ -247,8 +244,8 @@ class ParamExpression : public Expression {
     s << ts[param];
   }
 
-  plansys2_msgs::msg::Node::SharedPtr getTree(
-      plansys2_msgs::msg::Tree& tree, const Domain& d,
+  cocg_ast::Node::SharedPtr getTree(
+      cocg_ast::Tree& tree, const Domain& d,
       const std::vector<std::string>& replace = {}) const override {
     throw UnsupportedConstruct("ParamExpression");
   }
@@ -278,8 +275,8 @@ class ConstExpression : public Expression {
                  const TokenStruct<std::string>& ts,
                  const Domain& d) const override;
 
-  plansys2_msgs::msg::Node::SharedPtr getTree(
-      plansys2_msgs::msg::Tree& tree, const Domain& d,
+  cocg_ast::Node::SharedPtr getTree(
+      cocg_ast::Tree& tree, const Domain& d,
       const std::vector<std::string>& replace = {}) const override {
     throw UnsupportedConstruct("ConstExpression");
   }
@@ -295,3 +292,5 @@ class ConstExpression : public Expression {
 
 }  // namespace pddl
 }  // namespace parser
+
+#endif  // COCG_PDDL_PARSER_EXPRESSION_H_

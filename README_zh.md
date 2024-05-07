@@ -9,13 +9,25 @@
 
 
 #### 安装教程
-1.  xxxx
+1.  编译项目
+```
+mkdir build
+cd build
+cmake ..
+make
+```
+
 2.  xxxx
 3.  xxxx
 
 
 #### 使用说明
 
-1.  xxxx
+1.  测试parser
+```
+cd build/cocg_pddl_parser
+./parser pddl/dom1.pddl pddl/prob1.pddl
+```
+
 2.  xxxx
 3.  xxxx

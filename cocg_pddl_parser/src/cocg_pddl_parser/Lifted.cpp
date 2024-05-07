@@ -21,8 +21,8 @@ void Lifted::PDDLPrint(std::ostream& s, unsigned indent,
   s << " )";
 }
 
-plansys2_msgs::msg::Node::SharedPtr Lifted::getTree(
-    plansys2_msgs::msg::Tree& tree, const Domain& d,
+cocg_ast::Node::SharedPtr Lifted::getTree(
+    cocg_ast::Tree& tree, const Domain& d,
     const std::vector<std::string>& replace) const {
   throw UnsupportedConstruct("Lifted");
 }

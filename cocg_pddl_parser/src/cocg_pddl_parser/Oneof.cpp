@@ -16,18 +16,16 @@ void Oneof::PDDLPrint(std::ostream& s, unsigned indent,
   s << ")";
 }
 
-plansys2_msgs::msg::Node::SharedPtr Oneof::getTree(
-    plansys2_msgs::msg::Tree& tree, const Domain& d,
+cocg_ast::Node::SharedPtr Oneof::getTree(
+    cocg_ast::Tree& tree, const Domain& d,
     const std::vector<std::string>& replace) const {
-  plansys2_msgs::msg::Node::SharedPtr node =
-      std::make_shared<plansys2_msgs::msg::Node>();
-  node->node_type = plansys2_msgs::msg::Node::ONE_OF;
+  cocg_ast::Node::SharedPtr node = std::make_shared<cocg_ast::Node>();
+  node->node_type = cocg_ast::Node::ONE_OF;
   node->node_id = tree.nodes.size();
   tree.nodes.push_back(*node);
 
   for (unsigned i = 0; i < conds.size(); ++i) {
-    plansys2_msgs::msg::Node::SharedPtr child =
-        conds[i]->getTree(tree, d, replace);
+    cocg_ast::Node::SharedPtr child = conds[i]->getTree(tree, d, replace);
     node->children.push_back(child->node_id);
   }
 

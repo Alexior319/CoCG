@@ -35,8 +35,8 @@ void Derived::PDDLPrint(std::ostream& s, unsigned indent,
   s << "\n)\n";
 }
 
-plansys2_msgs::msg::Node::SharedPtr Derived::getTree(
-    plansys2_msgs::msg::Tree& tree, const Domain& d,
+cocg_ast::Node::SharedPtr Derived::getTree(
+    cocg_ast::Tree& tree, const Domain& d,
     const std::vector<std::string>& replace) const {
   throw UnsupportedConstruct("Derived");
 }

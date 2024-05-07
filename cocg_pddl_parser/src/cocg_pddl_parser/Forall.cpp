@@ -26,17 +26,16 @@ void Forall::PDDLPrint(std::ostream& s, unsigned indent,
   s << ")";
 }
 
-plansys2_msgs::msg::Node::SharedPtr Forall::getTree(
-    plansys2_msgs::msg::Tree& tree, const Domain& d,
+cocg_ast::Node::SharedPtr Forall::getTree(
+    cocg_ast::Tree& tree, const Domain& d,
     const std::vector<std::string>& replace) const {
-  plansys2_msgs::msg::Node::SharedPtr node =
-      std::make_shared<plansys2_msgs::msg::Node>();
-  node->node_type = plansys2_msgs::msg::Node::FOR_ALL;
+  cocg_ast::Node::SharedPtr node = std::make_shared<cocg_ast::Node>();
+  node->node_type = cocg_ast::Node::FOR_ALL;
   node->node_id = tree.nodes.size();
   tree.nodes.push_back(*node);
 
   for (unsigned j = 0; j < params.size(); j++) {
-    plansys2_msgs::msg::Param param;
+    cocg_ast::Param param;
     auto p = params[j];
     param.name = "?" + d.types[p]->getName() + std::to_string(j);
     param.type = d.types[p]->name;
@@ -47,7 +46,7 @@ plansys2_msgs::msg::Node::SharedPtr Forall::getTree(
   std::stringstream ss;
   ss << "?" << replace.size();
   tmp.push_back(ss.str());
-  plansys2_msgs::msg::Node::SharedPtr child = cond->getTree(tree, d, tmp);
+  cocg_ast::Node::SharedPtr child = cond->getTree(tree, d, tmp);
   node->children.push_back(child->node_id);
 
   tree.nodes[node->node_id] = *node;
