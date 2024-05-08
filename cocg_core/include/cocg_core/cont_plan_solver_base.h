@@ -7,7 +7,7 @@
 #include <string>
 
 #include "cocg_ast/plan.h"
-#include "utils.h"
+#include "cocg_core/utils.h"
 
 namespace cocg {
 
