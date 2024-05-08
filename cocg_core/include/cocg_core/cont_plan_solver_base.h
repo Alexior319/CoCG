@@ -7,6 +7,7 @@
 #include <string>
 
 #include "cocg_ast/plan.h"
+#include "utils.h"
 
 namespace cocg {
 
@@ -24,6 +25,17 @@ class ContPlanSolverBase {
    * @return a contingent plan ast
    */
   virtual std::optional<cocg_ast::Plan> get_cocg_cont_plan_ast(
+      const std::string& domain, const std::string& problem,
+      const std::string& node_namespace = "") = 0;
+
+  /**
+   * @brief get a contingent plan node tree root
+   * @param domain the domain content
+   * @param problem the problem content
+   * @param node_namespace the namespace of the node
+   * @return a contingent plan node tree root
+   */
+  virtual std::shared_ptr<ContPlanNode> get_cocg_cont_plan_tree_root(
       const std::string& domain, const std::string& problem,
       const std::string& node_namespace = "") = 0;
 };

@@ -93,7 +93,7 @@ void createAction(const float &level, std::string operator_name,
   action = ss.str();
 }
 
-std::optional<cocg_ast::Plan> CFFPlanSolver::get_cocg_cont_plan_ast(
+std::shared_ptr<ContPlanNode> CFFPlanSolver::get_cocg_cont_plan_tree_root(
     const std::string &domain, const std::string &problem,
     const std::string &node_namespace) {
   if (node_namespace != "") {
@@ -190,9 +190,20 @@ std::optional<cocg_ast::Plan> CFFPlanSolver::get_cocg_cont_plan_ast(
   }
 
   if (!solution) {
+    return nullptr;
+  } else {
+    return tree_map["0||0"];
+  }
+}
+
+std::optional<cocg_ast::Plan> CFFPlanSolver::get_cocg_cont_plan_ast(
+    const std::string &domain, const std::string &problem,
+    const std::string &node_namespace) {
+  auto root_node =
+      get_cocg_cont_plan_tree_root(domain, problem, node_namespace);
+  if (root_node == nullptr) {
     return {};
   } else {
-    auto root_node = tree_map["0||0"];
     return encode_plan(root_node);
   }
 }

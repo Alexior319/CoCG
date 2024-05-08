@@ -19,6 +19,10 @@ class CFFPlanSolver : public ContPlanSolverBase {
       const std::string& domain, const std::string& problem,
       const std::string& node_namespace = "") override;
 
+  std::shared_ptr<ContPlanNode> get_cocg_cont_plan_tree_root(
+      const std::string& domain, const std::string& problem,
+      const std::string& node_namespace = "") override;
+
  private:
   std::string cff_path_;
 };
