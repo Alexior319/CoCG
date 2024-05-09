@@ -1,5 +1,5 @@
 ( define ( problem problem_1 )
-( :domain plansys2 )
+( :domain simple )
 ( :objects
 	m1 - message
 	kitchen bedroom - room

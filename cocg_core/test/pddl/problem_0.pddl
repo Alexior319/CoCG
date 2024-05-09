@@ -1,3 +1,3 @@
 (define (problem void)
-  (:domain plansys2)
+  (:domain simple)
 )

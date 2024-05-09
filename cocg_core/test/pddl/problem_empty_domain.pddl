@@ -1,5 +1,5 @@
 (define (problem simple_1)
-  (:domain )
+  (:domain)
   (:objects
     leia - robot
     Jack - person
@@ -10,12 +10,12 @@
     (robot_at leia kitchen)
     (person_at Jack bedroom)
 
-
   )
 
   ;; The goal is to have both packages delivered to their destinations:
-  (:goal (and
-    (robot_talk leia m1 Jack) 
+  (:goal
+    (and
+      (robot_talk leia m1 Jack)
     )
   )
-  )
+)

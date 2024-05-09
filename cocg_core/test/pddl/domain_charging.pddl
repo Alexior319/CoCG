@@ -4,7 +4,9 @@
   (:requirements :typing :fluents :durative-actions :negative-preconditions)
 
   ;; Specify the domain's parameter types.
-  (:types robot waypoint - object)
+  (:types
+    robot waypoint - object
+  )
 
   ;; Specify the domains's predicates.
   ;; robot_at   - Is ?r (robot) at ?wp (waypoint)?
@@ -41,15 +43,16 @@
   (:durative-action move
     :parameters (?r - robot ?wp1 ?wp2 - waypoint)
     :duration (= ?duration (/ (distance ?wp1 ?wp2)
-                              (speed ?r)))
+        (speed ?r)))
     :condition (and (at start (connected ?wp1 ?wp2))
-                    (at start (robot_at ?r ?wp1))
-                    (at start (>= (state_of_charge ?r)
-                                  (* 100 (/ (distance ?wp1 ?wp2) (max_range ?r))))))
+      (at start (robot_at ?r ?wp1))
+      (at start (>= (state_of_charge ?r)
+          (* 100 (/ (distance ?wp1 ?wp2) (max_range ?r))))))
     :effect (and (at start (not (robot_at ?r ?wp1)))
-                 (at start (decrease (state_of_charge ?r)
-                                     (* 100 (/ (distance ?wp1 ?wp2) (max_range ?r)))))
-                 (at end (robot_at ?r ?wp2)))
+      (at start (decrease
+          (state_of_charge ?r)
+          (* 100 (/ (distance ?wp1 ?wp2) (max_range ?r)))))
+      (at end (robot_at ?r ?wp2)))
   )
 
   ;; Patrol ?wp (waypoint) with ?r (robot).
@@ -72,8 +75,8 @@
     :parameters (?r - robot ?wp - waypoint)
     :duration (= ?duration 5)
     :condition (and (at start (<= (state_of_charge ?r) 100))
-                    (over all (robot_at ?r ?wp))
-                    (over all (charger_at ?wp)))
+      (over all (robot_at ?r ?wp))
+      (over all (charger_at ?wp)))
     :effect (and (at end (assign (state_of_charge ?r) 100)))
   )
 )

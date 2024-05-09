@@ -17,12 +17,12 @@
     ;; robot erroneously specified
     (= (room_distance leia kitchen) 10)
 
-
   )
 
   ;; The goal is to have both packages delivered to their destinations:
-  (:goal (and
-    (robot_talk leia m1 Jack) 
+  (:goal
+    (and
+      (robot_talk leia m1 Jack)
     )
   )
-  )
+)

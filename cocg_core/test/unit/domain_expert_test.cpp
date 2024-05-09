@@ -55,7 +55,7 @@ TEST(domain_expert, exist_domain)
     std::istreambuf_iterator<char>());
 
   domain_expert.extendDomain(domain_simple_str);
-  ASSERT_TRUE(domain_expert.existDomain("plansys2"));
+  ASSERT_TRUE(domain_expert.existDomain("simple"));
 }
 
 TEST(domain_expert, get_domain)

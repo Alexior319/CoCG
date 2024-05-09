@@ -2,7 +2,7 @@
   (:domain charging)
 
   ;; Instantiate the objects.
-  (:objects 
+  (:objects
     r2d2 - robot
     wp_control - waypoint
     wp1 wp2 wp3 wp4 - waypoint
@@ -52,14 +52,16 @@
     (= (distance wp_control wp4) 40)
   )
 
-  (:goal (and
-    (patrolled wp1)
-    (patrolled wp2)
-    (patrolled wp3)
-    (patrolled wp4)
-  ))
-    
-  (:metric 
-    minimize (total-time)
+  (:goal
+    (and
+      (patrolled wp1)
+      (patrolled wp2)
+      (patrolled wp3)
+      (patrolled wp4)
+    )
+  )
+
+  (:metric minimize
+    (total-time)
   )
 )

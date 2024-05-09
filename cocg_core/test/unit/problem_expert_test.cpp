@@ -19,7 +19,7 @@ class problem_expert : public ::testing::Test {
 TEST(problem_expert, addget_instances) {
   std::string pkgpath =
       std::filesystem::current_path().string();
-  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple.pddl");
+  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple_pe.pddl");
   std::string domain_str((std::istreambuf_iterator<char>(domain_ifs)),
                          std::istreambuf_iterator<char>());
 
@@ -60,7 +60,7 @@ TEST(problem_expert, addget_instances) {
 TEST(problem_expert, add_functions) {
   std::string pkgpath =
       std::filesystem::current_path().string();
-  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple.pddl");
+  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple_pe.pddl");
   std::string domain_str((std::istreambuf_iterator<char>(domain_ifs)),
                          std::istreambuf_iterator<char>());
 
@@ -164,7 +164,7 @@ TEST(problem_expert, add_functions) {
 TEST(problem_expert, addget_predicates) {
   std::string pkgpath =
       std::filesystem::current_path().string();
-  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple.pddl");
+  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple_pe.pddl");
   std::string domain_str((std::istreambuf_iterator<char>(domain_ifs)),
                          std::istreambuf_iterator<char>());
 
@@ -314,7 +314,7 @@ TEST(problem_expert, addget_predicates) {
 TEST(problem_expert, addget_unknown_predicates) {
   std::string pkgpath =
       std::filesystem::current_path().string();
-  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple.pddl");
+  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple_pe.pddl");
   std::string domain_str((std::istreambuf_iterator<char>(domain_ifs)),
                          std::istreambuf_iterator<char>());
 
@@ -499,7 +499,7 @@ TEST(problem_expert, addget_functions) {
 TEST(problem_expert, addget_goals) {
   std::string pkgpath =
       std::filesystem::current_path().string();
-  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple.pddl");
+  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple_pe.pddl");
   std::string domain_str((std::istreambuf_iterator<char>(domain_ifs)),
                          std::istreambuf_iterator<char>());
 
@@ -552,7 +552,7 @@ TEST(problem_expert, addget_goals) {
 TEST(problem_expert, empty_goals) {
   std::string pkgpath =
       std::filesystem::current_path().string();
-  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple.pddl");
+  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple_pe.pddl");
   std::string domain_str((std::istreambuf_iterator<char>(domain_ifs)),
                          std::istreambuf_iterator<char>());
 
@@ -566,7 +566,7 @@ TEST(problem_expert, empty_goals) {
 TEST(problem_expert, get_problem) {
   std::string pkgpath =
       std::filesystem::current_path().string();
-  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple.pddl");
+  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple_pe.pddl");
   std::string domain_str((std::istreambuf_iterator<char>(domain_ifs)),
                          std::istreambuf_iterator<char>());
 
@@ -735,7 +735,7 @@ TEST(problem_expert, get_problem_observe) {
 TEST(problem_expert, add_problem) {
   std::string pkgpath =
       std::filesystem::current_path().string();
-  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple.pddl");
+  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple_pe.pddl");
   std::string domain_str((std::istreambuf_iterator<char>(domain_ifs)),
                          std::istreambuf_iterator<char>());
 
@@ -767,7 +767,7 @@ TEST(problem_expert, add_problem) {
       std::istreambuf_iterator<char>());
   ASSERT_FALSE(problem_expert.addProblem(problem_unexpected_syntax_str));
 
-  std::ifstream problem_ifs(pkgpath + "/pddl/problem_simple_1.pddl");
+  std::ifstream problem_ifs(pkgpath + "/pddl/problem_simple_1_pe.pddl");
   std::string problem_str((std::istreambuf_iterator<char>(problem_ifs)),
                           std::istreambuf_iterator<char>());
   ASSERT_TRUE(problem_expert.addProblem(problem_str));
@@ -802,17 +802,7 @@ TEST(problem_expert, add_problem) {
 
   ASSERT_EQ(
       problem_expert.getProblem(),
-      std::string("( define ( problem problem_1 )\n") +
-          std::string("( :domain simple )\n( :objects\n") +
-          std::string("\tjack - person\n") + std::string("\tm1 - message\n") +
-          std::string("\tleia - robot\n") +
-          std::string("\tkitchen bedroom - room\n)\n") +
-          std::string("( :init\n\t( robot_at leia kitchen )\n") +
-          std::string("\t( person_at jack bedroom )\n") +
-          std::string(
-              "\t( = ( room_distance kitchen bedroom ) 10.0000000000 )\n)\n") +
-          std::string(
-              "( :goal\n\t( and\n\t\t( robot_talk leia m1 jack )\n\t))\n)\n"));
+      std::string("( define ( problem problem_1 )\n( :domain simple )\n( :objects\n\tjack - person\n\tm1 - message\n\tleia - robot\n\tkitchen bedroom - room\n)\n( :init\n\t( robot_at leia kitchen )\n\t( person_at jack bedroom )\n\t( = ( room_distance kitchen bedroom ) 10.0000000000 )\n)\n( :goal\n\t\t\t( robot_talk leia m1 jack )\n\t)\n)\n"));
 
   ASSERT_TRUE(problem_expert.clearKnowledge());
   ASSERT_EQ(problem_expert.getPredicates().size(), 0);
@@ -865,16 +855,11 @@ TEST(problem_expert, add_problem_with_constants) {
       parser::pddl::fromStringPredicate("(person_at jack bedroom)")));
 
   ASSERT_EQ(parser::pddl::toString(problem_expert.getGoal()),
-            "(robot_talk leia m1 jack)");
+            "(and (robot_talk leia m1 jack))");
 
   ASSERT_EQ(
       problem_expert.getProblem(),
-      std::string("( define ( problem problem_1 )\n( :domain plansys2 )\n") +
-          std::string(
-              "( :objects\n\tm1 - message\n\tkitchen bedroom - room\n)\n") +
-          std::string("( :init\n\t( robot_at leia kitchen )\n") +
-          std::string("\t( person_at jack bedroom )\n)\n") +
-          std::string("( :goal\n\t\t\t( robot_talk leia m1 jack )\n\t)\n)\n"));
+      std::string("( define ( problem problem_1 )\n( :domain simple )\n( :objects\n\tm1 - message\n\tkitchen bedroom - room\n)\n( :init\n\t( robot_at leia kitchen )\n\t( person_at jack bedroom )\n)\n( :goal\n\t\t\t( robot_talk leia m1 jack )\n\t)\n)\n"));
 
   ASSERT_TRUE(problem_expert.clearKnowledge());
   ASSERT_EQ(problem_expert.getPredicates().size(), 0);
@@ -882,7 +867,7 @@ TEST(problem_expert, add_problem_with_constants) {
   ASSERT_EQ(problem_expert.getInstances().size(), 0);
   ASSERT_EQ(
       problem_expert.getProblem(),
-      std::string("( define ( problem problem_1 )\n( :domain plansys2 )\n") +
+      std::string("( define ( problem problem_1 )\n( :domain simple )\n") +
           std::string("( :objects\n)\n( :init\n)\n( :goal\n\t\t)\n)\n"));
 
   std::ifstream problem_2_ifs(pkgpath +
@@ -893,7 +878,7 @@ TEST(problem_expert, add_problem_with_constants) {
 
   ASSERT_NE(problem_1_str, problem_2_str);
   ASSERT_NE(problem_expert.getProblem(), problem_2_str);
-  ASSERT_EQ(problem_expert.getProblem(), problem_1_str);
+  ASSERT_EQ(problem_expert.getProblem(), std::string("( define ( problem problem_1 )\n( :domain simple )\n( :objects\n\tm1 - message\n\tkitchen bedroom - room\n)\n( :init\n\t( robot_at leia kitchen )\n\t( person_at jack bedroom )\n)\n( :goal\n\t\t\t( robot_talk leia m1 jack )\n\t)\n)\n"));
 }
 
 TEST(problem_expert, add_problem_observe) {
@@ -973,7 +958,7 @@ TEST(problem_expert, is_goal_satisfied) {
   // TODO test broken from 0f653673109602f965b9c9eac7e340f6bd07051e
   std::string pkgpath =
       std::filesystem::current_path().string();
-  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple.pddl");
+  std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple_pe.pddl");
   std::string domain_str((std::istreambuf_iterator<char>(domain_ifs)),
                          std::istreambuf_iterator<char>());
 
