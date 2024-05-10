@@ -22,6 +22,7 @@ class ProblemExpert {
  public:
   ProblemExpert(){};
   explicit ProblemExpert(std::shared_ptr<DomainExpert>& domain_expert);
+  explicit ProblemExpert(const ProblemExpert& problem_expert);
 
   std::vector<cocg::Instance> getInstances();
   bool addInstance(const cocg::Instance& instance);

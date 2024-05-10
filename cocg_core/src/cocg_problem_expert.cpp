@@ -21,6 +21,15 @@ namespace cocg {
 ProblemExpert::ProblemExpert(std::shared_ptr<DomainExpert>& domain_expert)
     : domain_expert_(domain_expert) {}
 
+ProblemExpert::ProblemExpert(const ProblemExpert& problem_expert) {
+  domain_expert_ = problem_expert.domain_expert_;
+  instances_ = problem_expert.instances_;
+  predicates_ = problem_expert.predicates_;
+  functions_ = problem_expert.functions_;
+  conditionals_ = problem_expert.conditionals_;
+  goal_ = problem_expert.goal_;
+}
+
 bool ProblemExpert::addInstance(const cocg::Instance& instance) {
   if (!isValidType(instance.type)) {
     return false;
