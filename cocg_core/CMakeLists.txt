@@ -17,6 +17,7 @@ set(COCG_CORE_SRC
   src/cocg_problem_expert_utils.cpp
   src/cocg_problem_expert.cpp
   src/cocg_utils.cpp
+  src/cocg_core.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${COCG_CORE_SRC})
