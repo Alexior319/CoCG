@@ -88,6 +88,7 @@ void encode_plan(const std::shared_ptr<ContPlanNode>& root,
     struc.push_back(0);
     return;
   }
+  // preorder traverse the plan tree
   struc.push_back(1);
   data.push_back(root->item);
   encode_plan(root->true_node, struc, data);
