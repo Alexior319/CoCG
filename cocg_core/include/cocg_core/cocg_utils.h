@@ -78,9 +78,10 @@ cocg_ast::Action::SharedPtr convert_plan_node_to_ast(
  * nullptr
  * @param init_state the initial state
  * @param root the root of the contingent planning tree
- * @return a tuple with the goal state, the vector of nodes and the last node
+ * @return a tuple with the goal state, the vector of ast actions and the last
+ * node in the plan tree
  */
-std::tuple<cocg::CoCGState, std::vector<cocg::ContPlanNode::SharedPtr>,
+std::tuple<cocg::CoCGState, std::vector<cocg_ast::Action::SharedPtr>,
            cocg::ContPlanNode::SharedPtr>
 traverse_contingent_planning_tree(const cocg::CoCGState& init_state,
                                   cocg::ContPlanNode::SharedPtr root,

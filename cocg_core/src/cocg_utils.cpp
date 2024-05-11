@@ -60,28 +60,27 @@ cocg_ast::Action::SharedPtr convert_plan_node_to_ast(
   return action;
 }
 
-std::tuple<cocg::CoCGState, std::vector<cocg::ContPlanNode::SharedPtr>,
+std::tuple<cocg::CoCGState, std::vector<cocg_ast::Action::SharedPtr>,
            cocg::ContPlanNode::SharedPtr>
 traverse_contingent_planning_tree(const cocg::CoCGState& init_state,
                                   cocg::ContPlanNode::SharedPtr root,
                                   cocg::DomainExpert& domain_expert) {
   cocg::CoCGState goal_state = init_state;
-  std::vector<cocg::ContPlanNode::SharedPtr> mid_nodes;
+  std::vector<cocg_ast::Action::SharedPtr> mid_actions;
   cocg::ContPlanNode::SharedPtr last_node = root;
   while (last_node != nullptr) {
     // sensing action or null action node
     if (last_node->true_node != last_node->false_node) break;
 
-    // actuation action
-    mid_nodes.push_back(last_node);
-
     // action ast
     cocg_ast::Action::SharedPtr action_ast =
         convert_plan_node_to_ast(last_node, domain_expert);
+    mid_actions.push_back(action_ast);
+
     goal_state = apply_actuation_action(goal_state, *action_ast);
 
     last_node = last_node->true_node;
   }
-  return {goal_state, mid_nodes, last_node};
+  return {goal_state, mid_actions, last_node};
 }
 }  // namespace cocg
