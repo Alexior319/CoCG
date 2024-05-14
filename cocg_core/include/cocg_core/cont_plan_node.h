@@ -41,7 +41,7 @@ struct ContPlanNode {
   void print_info() {
     std::cout << item.time << "|" << item.action << ":" << item.duration;
     if (true_node) std::cout << " true son: " << true_node->item.action;
-    if (false_node) std::cout << " false son: " << false_node->item.action;
+    if (false_node != true_node) std::cout << " false son: " << false_node->item.action;
     std::cout << std::endl;
   }
 };
