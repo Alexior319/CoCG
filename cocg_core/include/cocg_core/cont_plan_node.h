@@ -38,6 +38,13 @@ struct ContPlanNode {
   bool operator!=(const ContPlanNode& other) const {
     return !this->operator==(other);
   }
+  void print_info() {
+    std::cout << item.time << "|" << item.action << ":" << item.duration;
+    if (true_node) std::cout << " true son: " << true_node->item.action;
+    if (false_node) std::cout << " false son: " << false_node->item.action;
+    std::cout << std::endl;
+  }
 };
+
 }  // namespace cocg
 #endif  // COCG_CORE_CONT_PLAN_NODE_H_

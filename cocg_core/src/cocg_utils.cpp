@@ -5,6 +5,7 @@ namespace cocg {
 CoCGState apply_actuation_action(const CoCGState& init_state,
                                  const cocg_ast::Action& action) {
   CoCGState goal_state = init_state;
+  // TODO: optimizable here
   apply(action.effects, goal_state.predicates, goal_state.functions);
   return goal_state;
 }
@@ -82,5 +83,13 @@ traverse_contingent_planning_tree(const cocg::CoCGState& init_state,
     last_node = last_node->true_node;
   }
   return {goal_state, mid_actions, last_node};
+}
+
+void print_cont_plan_tree(ContPlanNode::SharedPtr root) {
+  if (root == nullptr) return;
+  root->print_info();
+  print_cont_plan_tree(root->true_node);
+  if (root->true_node != root->false_node)
+    print_cont_plan_tree(root->false_node);
 }
 }  // namespace cocg

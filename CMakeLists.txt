@@ -10,8 +10,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}")
 # default lib(static and dynamic) directory
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}")
 
+link_directories("${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}")
+
 add_subdirectory(cocg_ast)
 add_subdirectory(cocg_pddl_parser)
 add_subdirectory(cocg_core)
 add_subdirectory(cocg_cff_plan_solver)
+add_subdirectory(cocg_tests)
 

@@ -86,6 +86,12 @@ std::tuple<cocg::CoCGState, std::vector<cocg_ast::Action::SharedPtr>,
 traverse_contingent_planning_tree(const cocg::CoCGState& init_state,
                                   cocg::ContPlanNode::SharedPtr root,
                                   cocg::DomainExpert& domain_expert);
+
+/**
+ * @brief output the tree infl
+ * @param root root node of the plan tree
+ */
+void print_cont_plan_tree(ContPlanNode::SharedPtr root);
 }  // namespace cocg
 
 #endif  // COCG_CORE_COCG_UTILS_H_
