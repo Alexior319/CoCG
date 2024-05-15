@@ -11,10 +11,10 @@ class Instance {
  public:
   Domain &d;
   std::string name;
-  GroundVec init;                      // initial state
-  std::vector<Condition *> init_cond;  // initial and goal states
+  GroundVec init;                      // initial deterministic state
+  std::vector<Condition *> init_cond;  // initial uncertain states(or/unknown/oneof)
   Condition *goal = nullptr;           // Goal condition
-  TokenStruct<std::string> ts;
+  TokenStruct<std::string> ts;         // object(int tokens) types
   bool metric;
 
   Instance(Domain &dom) : d(dom), metric(false) {}

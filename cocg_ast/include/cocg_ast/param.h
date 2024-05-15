@@ -8,8 +8,8 @@
 
 namespace cocg_ast {
 struct Param {
-  std::string name;
-  std::string type;
+  std::string name; // grounded parameter
+  std::string type; // type parameter
   std::vector<std::string> sub_types;
 
   using SharedPtr = std::shared_ptr<Param>;

@@ -23,6 +23,7 @@ class ProblemExpert {
   ProblemExpert(){};
   explicit ProblemExpert(std::shared_ptr<DomainExpert>& domain_expert);
   explicit ProblemExpert(const ProblemExpert& problem_expert);
+  explicit ProblemExpert(const std::shared_ptr<ProblemExpert>& problem_expert);
 
   std::vector<cocg::Instance> getInstances();
   bool addInstance(const cocg::Instance& instance);
@@ -39,6 +40,7 @@ class ProblemExpert {
   bool addConditional(const cocg_ast::Tree& condition);
   bool removeConditional(const cocg_ast::Tree& condition);
   bool existConditional(const cocg_ast::Tree& condition);
+  bool removeConditionalUnknown(const cocg_ast::Tree& condition, bool known_to_true = true);
 
   std::vector<cocg::Function> getFunctions();
   bool addFunction(const cocg::Function& function);

@@ -8,6 +8,7 @@
 #include "cocg_ast/action.h"
 #include "cocg_core/cocg_problem_expert.h"
 #include "cocg_core/cocg_utils.h"
+// #include "cocg_core/cocg_graphplan.h"
 
 namespace cocg {
 struct SubGraphNode {
@@ -20,8 +21,7 @@ struct SubGraphNode {
 
 /**
  * @brief build the cocg graph recursively
- * @param init_state the initial state
- * @param mid_goal_state the mid goal state
+ * @param mid_expert the proble expert that contains the initial and goal state
  * @param actions the actions sets between the initial state and the mid goal
  * state
  * @param node the current sensing node or null node after the goal state
@@ -30,7 +30,7 @@ struct SubGraphNode {
  * @return the root subgraph
  */
 std::shared_ptr<SubGraphNode> build_cocg_subgraph(
-    const CoCGState& init_state, const CoCGState& mid_goal_state,
+    std::shared_ptr<cocg::ProblemExpert> mid_expert,
     std::vector<cocg_ast::Action::SharedPtr> actions,
     cocg::ContPlanNode::SharedPtr node, float t0,
     cocg::DomainExpert& domain_expert);
@@ -38,14 +38,14 @@ std::shared_ptr<SubGraphNode> build_cocg_subgraph(
 /**
  * @brief compute the planning graph using GraphPlan algorithm or else
  * @param init_state the initial state
- * @param goal_state the goal state
+ * @param mid_expert the proble expert that contains the initial and goal state
  * @param actions the grounded actions sets between the initial state and the
  * goal state
  * @param domain_expert the domain expert
  */
 std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
-    const CoCGState& init_state, const CoCGState& goal_state,
-    std::vector<cocg_ast::Action::SharedPtr> actions,
+    std::shared_ptr<cocg::ProblemExpert> mid_expert,
+    const std::vector<cocg_ast::Action::SharedPtr> actions,
     cocg::DomainExpert& domain_expert);
 
 }  // namespace cocg

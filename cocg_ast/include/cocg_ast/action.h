@@ -12,8 +12,9 @@
 namespace cocg_ast {
 struct Action {
   std::string name;
-  std::vector<cocg_ast::Param> parameters;
-  cocg_ast::Tree preconditions;
+  std::vector<cocg_ast::Param>
+      parameters;  // include both grounded parameters(.name) and parameters(.type)
+  cocg_ast::Tree preconditions; // grounded preconditions
   cocg_ast::Tree effects;
   cocg_ast::Tree observe;
 

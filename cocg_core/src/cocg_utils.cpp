@@ -2,21 +2,52 @@
 
 namespace cocg {
 
-CoCGState apply_actuation_action(const CoCGState& init_state,
-                                 const cocg_ast::Action& action) {
-  CoCGState goal_state = init_state;
-  // TODO: optimizable here
-  apply(action.effects, goal_state.predicates, goal_state.functions);
+std::shared_ptr<cocg::ProblemExpert> apply_actuation_action(
+    std::shared_ptr<cocg::ProblemExpert> init_state,
+    const cocg_ast::Action& action, bool new_state) {
+  std::shared_ptr<cocg::ProblemExpert> goal_state;
+  if (new_state) {
+    goal_state = std::make_shared<cocg::ProblemExpert>(init_state);
+  } else {
+    goal_state = init_state;
+  }
+
+  std::cout << "Applying actuation action: " << action.name;
+  for (auto p : action.parameters) {
+    std::cout << " " << p.name << " - " << p.type << "\t";
+  }
+  std::cout << "\n";
+
+  cocg::apply(action.effects, goal_state);
   return goal_state;
 }
 
-CoCGState apply_sensing_action(const CoCGState& init_state,
-                               const cocg_ast::Action& action,
-                               bool sensing_result) {
-  CoCGState goal_state = init_state;
-  auto problem_expert = std::make_shared<cocg::ProblemExpert>();
-  evaluate(action.observe, problem_expert, goal_state.predicates,
-           goal_state.functions, true, true, 0, sensing_result);
+std::shared_ptr<cocg::ProblemExpert> apply_sensing_action(
+    std::shared_ptr<cocg::ProblemExpert> init_state,
+    const cocg_ast::Action& action, bool sensing_result, bool new_state) {
+  std::shared_ptr<cocg::ProblemExpert> goal_state;
+  if (new_state) {
+    goal_state = std::make_shared<cocg::ProblemExpert>(init_state);
+  } else {
+    goal_state = init_state;
+  }
+
+  std::cout << "Applying sensing action: " << action.name;
+  for (auto p : action.parameters) {
+    std::cout << " " << p.name << " - " << p.type << " ";
+  }
+  std::cout << "sensing result: " << sensing_result << "\n";
+
+  std::string observe_unknown_str =
+      "(unknown " + parser::pddl::toString(action.observe, 1) + ")";
+  cocg::Unknown observe_unknown = cocg::Unknown(observe_unknown_str);
+
+  if (sensing_result) {
+    goal_state->removeConditionalUnknown(observe_unknown, true);
+  } else {
+    goal_state->removeConditionalUnknown(observe_unknown, false);
+  }
+
   return goal_state;
 }
 
@@ -41,7 +72,8 @@ void split_grounded_action(const std::string& grounded_action,
       action_args.push_back(
           grounded_action.substr(start_pos, end_pos - start_pos));
     } else {
-      action_args.push_back(grounded_action.substr(start_pos));
+      action_args.push_back(grounded_action.substr(
+          start_pos, grounded_action.length() - start_pos - 1));
     }
   }
 }
@@ -61,12 +93,15 @@ cocg_ast::Action::SharedPtr convert_plan_node_to_ast(
   return action;
 }
 
-std::tuple<cocg::CoCGState, std::vector<cocg_ast::Action::SharedPtr>,
+std::tuple<std::shared_ptr<cocg::ProblemExpert>,
+           std::vector<cocg_ast::Action::SharedPtr>,
            cocg::ContPlanNode::SharedPtr>
-traverse_contingent_planning_tree(const cocg::CoCGState& init_state,
-                                  cocg::ContPlanNode::SharedPtr root,
-                                  cocg::DomainExpert& domain_expert) {
-  cocg::CoCGState goal_state = init_state;
+traverse_contingent_planning_tree(
+    const std::shared_ptr<cocg::ProblemExpert> init_state,
+    cocg::ContPlanNode::SharedPtr root, cocg::DomainExpert& domain_expert) {
+  std::shared_ptr<cocg::ProblemExpert> goal_state =
+      std::make_shared<cocg::ProblemExpert>(init_state);
+
   std::vector<cocg_ast::Action::SharedPtr> mid_actions;
   cocg::ContPlanNode::SharedPtr last_node = root;
   while (last_node != nullptr) {

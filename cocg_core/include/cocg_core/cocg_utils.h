@@ -10,47 +10,29 @@
 
 namespace cocg {
 
-struct CoCGState {
-  std::vector<cocg::Predicate> predicates;  // predicates in this state
-  std::vector<cocg::Function>
-      functions;  // functions in this state, not used now
-
-  using SharedPtr = std::shared_ptr<CoCGState>();
-
-  // comparison operators
-  bool operator==(const CoCGState& other) const {
-    if (this->predicates != other.predicates) {
-      return false;
-    }
-    if (this->functions != other.functions) {
-      return false;
-    }
-    return true;
-  }
-  bool operator!=(const CoCGState& other) const {
-    return !this->operator==(other);
-  }
-};
-
 /**
  * @brief apply the effects of an actuation action to a state
- * @param init_state the initial state
+ * @param init_state the initial state, stored in a proble expert
  * @param action the actuation action
- * @return the goal state
+ * @param new_state whether to create a new state or modify the input state
+ * @return pointer to the goal state, stored in a proble expert
  */
-CoCGState apply_actuation_action(const CoCGState& init_state,
-                                 const cocg_ast::Action& action);
+std::shared_ptr<cocg::ProblemExpert> apply_actuation_action(
+    std::shared_ptr<cocg::ProblemExpert> init_state,
+    const cocg_ast::Action& action, bool new_state = false);
 
 /**
  * @brief apply the effects of a sensing action to a state
  * @param init_state the initial state
  * @param action the sensing action
  * @param sensing_result the result of the sensing action, true or false
+ * @param new_state whether to create a new state or modify the input state
  * @return the goal state
  */
-CoCGState apply_sensing_action(const CoCGState& init_state,
-                               const cocg_ast::Action& action,
-                               bool sensing_result);
+std::shared_ptr<cocg::ProblemExpert> apply_sensing_action(
+    std::shared_ptr<cocg::ProblemExpert> init_state,
+    const cocg_ast::Action& action, bool sensing_result,
+    bool new_state = false);
 
 /**
  * @brief split a grounded action into action name and action arguments
@@ -81,11 +63,12 @@ cocg_ast::Action::SharedPtr convert_plan_node_to_ast(
  * @return a tuple with the goal state, the vector of ast actions and the last
  * node in the plan tree
  */
-std::tuple<cocg::CoCGState, std::vector<cocg_ast::Action::SharedPtr>,
+std::tuple<std::shared_ptr<cocg::ProblemExpert>,
+           std::vector<cocg_ast::Action::SharedPtr>,
            cocg::ContPlanNode::SharedPtr>
-traverse_contingent_planning_tree(const cocg::CoCGState& init_state,
-                                  cocg::ContPlanNode::SharedPtr root,
-                                  cocg::DomainExpert& domain_expert);
+traverse_contingent_planning_tree(
+    const std::shared_ptr<cocg::ProblemExpert> init_state,
+    cocg::ContPlanNode::SharedPtr root, cocg::DomainExpert& domain_expert);
 
 /**
  * @brief output the tree infl

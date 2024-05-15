@@ -30,6 +30,16 @@ ProblemExpert::ProblemExpert(const ProblemExpert& problem_expert) {
   goal_ = problem_expert.goal_;
 }
 
+ProblemExpert::ProblemExpert(
+    const std::shared_ptr<ProblemExpert>& problem_expert) {
+  domain_expert_ = problem_expert->domain_expert_;
+  instances_ = problem_expert->instances_;
+  predicates_ = problem_expert->predicates_;
+  functions_ = problem_expert->functions_;
+  conditionals_ = problem_expert->conditionals_;
+  goal_ = problem_expert->goal_;
+}
+
 bool ProblemExpert::addInstance(const cocg::Instance& instance) {
   if (!isValidType(instance.type)) {
     return false;
@@ -215,6 +225,71 @@ bool ProblemExpert::removeConditional(const cocg_ast::Tree& condition) {
     }
   }
   return true;
+}
+
+bool ProblemExpert::removeConditionalUnknown(const cocg_ast::Tree& condition,
+                                             bool known_to_true) {
+  if (!isValidCondition(condition)) {  // if predicate is not valid, error
+    return false;
+  }
+  auto it =
+      std::find_if(conditionals_.begin(), conditionals_.end(),
+                   [&condition](const auto& ele) {
+                     return parser::pddl::checkTreeEquality(ele, condition);
+                   });
+  if (it != conditionals_.end()) {
+    conditionals_.erase(it);
+
+    // TODO refactor to its own function
+    std::vector<cocg_ast::Tree> conditionals_to_remove;
+    std::vector<cocg_ast::Tree> conditionals_to_add;
+    if (condition.nodes[0].node_type == cocg_ast::Node::UNKNOWN) {
+      for (auto c : conditionals_) {
+        if (c.nodes[0].node_type == cocg_ast::Node::ONE_OF) {
+          cocg_ast::Tree new_one_of;
+          new_one_of.nodes.push_back(c.nodes[0]);
+          new_one_of.nodes[0].children.clear();
+          int num_children = 0;
+          if (!known_to_true) {
+            for (auto child_ind : c.nodes[0].children) {
+              if (!parser::pddl::checkNodeEquality(c.nodes[child_ind],
+                                                   condition.nodes[1])) {
+                new_one_of.nodes.push_back(c.nodes[child_ind]);
+                new_one_of.nodes[0].children.push_back(num_children + 1);
+                num_children++;
+              }
+            }
+            conditionals_to_remove.push_back(c);
+            if (num_children > 0) {
+              conditionals_to_add.push_back(new_one_of);
+            }
+          } else {
+            for (auto child_ind : c.nodes[0].children) {
+              if (parser::pddl::checkNodeEquality(c.nodes[child_ind],
+                                                  condition.nodes[1])) {
+                new_one_of.nodes.push_back(c.nodes[child_ind]);
+                new_one_of.nodes[0].children.push_back(num_children + 1);
+                num_children++;
+              }
+            }
+            conditionals_to_remove.push_back(c);
+            if (num_children > 0) {
+              conditionals_to_add.push_back(new_one_of);
+            }
+          }
+        }
+      }
+      for (const auto& c : conditionals_to_remove) {
+        removeConditional(c);
+      }
+      for (const auto& c : conditionals_to_add) {
+        addConditional(c);
+      }
+    }
+    return true;
+  }
+  std::cout << "Conditional not found\n" << std::endl;
+  return false;
 }
 
 bool ProblemExpert::existConditional(const cocg_ast::Tree& condition) {
