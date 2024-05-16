@@ -137,6 +137,8 @@ std::vector<uint32_t> getSubtreeIds(const cocg_ast::Tree& tree);
 
 std::vector<cocg_ast::Tree> getSubtrees(const cocg_ast::Tree& tree);
 
+cocg_ast::Tree getNegativeTreeFromPredicate(const cocg_ast::Node& predicate);
+
 void getSubtreeChildren(cocg_ast::Tree& subtree, const cocg_ast::Tree& tree,
                         uint32_t tree_parent, uint32_t subtree_parent);
 

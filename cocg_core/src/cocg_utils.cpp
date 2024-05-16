@@ -93,33 +93,6 @@ cocg_ast::Action::SharedPtr convert_plan_node_to_ast(
   return action;
 }
 
-std::tuple<std::shared_ptr<cocg::ProblemExpert>,
-           std::vector<cocg_ast::Action::SharedPtr>,
-           cocg::ContPlanNode::SharedPtr>
-traverse_contingent_planning_tree(
-    const std::shared_ptr<cocg::ProblemExpert> init_state,
-    cocg::ContPlanNode::SharedPtr root, cocg::DomainExpert& domain_expert) {
-  std::shared_ptr<cocg::ProblemExpert> goal_state =
-      std::make_shared<cocg::ProblemExpert>(init_state);
-
-  std::vector<cocg_ast::Action::SharedPtr> mid_actions;
-  cocg::ContPlanNode::SharedPtr last_node = root;
-  while (last_node != nullptr) {
-    // sensing action or null action node
-    if (last_node->true_node != last_node->false_node) break;
-
-    // action ast
-    cocg_ast::Action::SharedPtr action_ast =
-        convert_plan_node_to_ast(last_node, domain_expert);
-    mid_actions.push_back(action_ast);
-
-    goal_state = apply_actuation_action(goal_state, *action_ast);
-
-    last_node = last_node->true_node;
-  }
-  return {goal_state, mid_actions, last_node};
-}
-
 void print_cont_plan_tree(ContPlanNode::SharedPtr root) {
   if (root == nullptr) return;
   root->print_info();

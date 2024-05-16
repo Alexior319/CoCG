@@ -973,6 +973,14 @@ cocg_ast::Tree::SharedPtr fromSubtrees(
   return tree;
 }
 
+cocg_ast::Tree getNegativeTreeFromPredicate(const cocg_ast::Node& predicate){
+  cocg_ast::Tree ret;
+  std::string predicate_str = toString(predicate);
+  predicate_str = "(not " + predicate_str + ")";
+  ret = fromString(predicate_str);
+  return ret;
+}
+
 std::vector<uint32_t> getSubtreeIds(const cocg_ast::Tree& tree) {
   if (tree.nodes.empty()) {  // No expression
     return {};
