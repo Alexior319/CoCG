@@ -811,7 +811,6 @@ TEST(problem_expert, add_problem) {
 }
 
 TEST(problem_expert, add_problem_with_constants) {
-  // TODO test broken from 0f653673109602f965b9c9eac7e340f6bd07051e
   std::string pkgpath =
       std::filesystem::current_path().string();
   std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple_constants.pddl");
@@ -882,7 +881,6 @@ TEST(problem_expert, add_problem_with_constants) {
 }
 
 TEST(problem_expert, add_problem_observe) {
-  // TODO test broken from 0f653673109602f965b9c9eac7e340f6bd07051e
   std::string pkgpath =
       std::filesystem::current_path().string();
   std::ifstream domain_ifs(pkgpath + "/pddl/domain_blocks_observe.pddl");
@@ -955,7 +953,6 @@ TEST(problem_expert, add_problem_observe) {
 }
 
 TEST(problem_expert, is_goal_satisfied) {
-  // TODO test broken from 0f653673109602f965b9c9eac7e340f6bd07051e
   std::string pkgpath =
       std::filesystem::current_path().string();
   std::ifstream domain_ifs(pkgpath + "/pddl/domain_simple_pe.pddl");

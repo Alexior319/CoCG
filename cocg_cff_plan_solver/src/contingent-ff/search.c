@@ -521,12 +521,11 @@ void add_to_bfs_space(State *S, BfsNode *tmpbfs, BfsEdge *tmpedge, BfsNode *open
 
 }
 
-
 /* JOERGPARTIALUNDO: cleanup this whole function, see comments below.
    Alvaro: Done. Now we mark the node as solved only if bestedge is
    solved.  For greedy search, solved states are always better
    independently of their f value
-   Alvaro: TODO: cleanup a bit more....
+   Alvaro: NOTICE: cleanup a bit more....
  */
 void update_fvalues_and_markers(BfsNode *open_leaf) {
     BfsNode *i_bfs;

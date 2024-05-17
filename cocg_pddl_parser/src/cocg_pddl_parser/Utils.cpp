@@ -844,7 +844,7 @@ cocg_ast::Node fromStringPredicate(const std::string& predicate) {
 
   tokens[0].erase(0, 1);
   if (tokens[0].at(tokens[0].size() - 1) ==
-      ')') {  // TODO this is needed when there are no parameters
+      ')') {  // NOTICE: this is needed when there are no parameters
     tokens[0].erase(tokens[0].size() - 1, 1);
   }
   ret.name = tokens[0];

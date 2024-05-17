@@ -192,7 +192,7 @@ bool ProblemExpert::removeConditional(const cocg_ast::Tree& condition) {
   if (it != conditionals_.end()) {
     conditionals_.erase(it);
 
-    // TODO refactor to its own function
+    // NOTICE: refactor to its own function
     std::vector<cocg_ast::Tree> conditionals_to_remove;
     std::vector<cocg_ast::Tree> conditionals_to_add;
     if (condition.nodes[0].node_type == cocg_ast::Node::UNKNOWN) {
@@ -240,7 +240,6 @@ bool ProblemExpert::removeConditionalUnknown(const cocg_ast::Tree& condition,
   if (it != conditionals_.end()) {
     conditionals_.erase(it);
 
-    // TODO refactor to its own function
     std::vector<cocg_ast::Tree> conditionals_to_remove;
     std::vector<cocg_ast::Tree> conditionals_to_add;
     if (condition.nodes[0].node_type == cocg_ast::Node::UNKNOWN) {

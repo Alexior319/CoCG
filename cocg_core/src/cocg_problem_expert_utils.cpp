@@ -42,7 +42,7 @@ std::tuple<bool, bool, double> evaluate(
     }
 
     case cocg_ast::Node::FOR_ALL: {
-      // TODO this only handles a single predicate and a single parameter
+      // NOTICE: this only handles a single predicate and a single parameter
       bool success = true;
       bool truth_value = true;
       auto all_instances = problem_client->getInstances();
