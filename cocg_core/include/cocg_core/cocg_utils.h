@@ -22,6 +22,21 @@ std::shared_ptr<cocg::ProblemExpert> apply_actuation_action(
     const cocg_ast::Action& action, bool new_state = false);
 
 /**
+ * @brief get the name and parameters of a grounded action
+ * @param action the action to get the name and parameters
+ * @return string format: (action_name arg1 ...)
+ */
+std::string get_grounded_action_string(const cocg_ast::Action& action);
+
+/**
+ * @brief get the string format of a fact
+ * @param fact the fact encoded in a tree
+ * @return string format: (predicate_name arg1 arg2 ...) or (not (predicate_name
+ * arg1 arg2 ...))
+ */
+std::string get_fact_string(const cocg_ast::Tree& fact);
+
+/**
  * @brief apply the effects of a sensing action to a state
  * @param init_state the initial state stored in a problem expert
  * @param action the sensing action

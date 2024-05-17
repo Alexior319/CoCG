@@ -3,6 +3,7 @@
 
 #include <map>
 #include <memory>
+#include <tuple>
 #include <vector>
 
 #include "cocg_ast/action.h"
@@ -14,7 +15,7 @@ namespace cocg {
 struct SubGraphNode {
   float t0_;
   int layers_cnt_;
-  std::map<float, std::vector<cocg_ast::Action>> actions_layers_;
+  std::map<uint32_t, std::vector<cocg_ast::Action>> actions_layers_;
   std::shared_ptr<SubGraphNode> next_true_;
   std::shared_ptr<SubGraphNode> next_false_;
 };
@@ -27,8 +28,7 @@ struct SubGraphNode {
  * @return a tuple with the goal state, the vector of ast actions and the last
  * node in the plan tree
  */
-std::tuple<std::shared_ptr<cocg::ProblemExpert>,
-           std::vector<cocg_ast::Action>,
+std::tuple<std::shared_ptr<cocg::ProblemExpert>, std::vector<cocg_ast::Action>,
            cocg::ContPlanNode::SharedPtr>
 traverse_contingent_planning_tree(
     const std::shared_ptr<cocg::ProblemExpert> init_state,
@@ -63,9 +63,8 @@ std::shared_ptr<SubGraphNode> build_cocg_subgraph(
 std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
     std::shared_ptr<cocg::ProblemExpert> init_state,
     std::shared_ptr<cocg::ProblemExpert> goal_state,
-    const std::vector<cocg_ast::Action> actions,
+    const std::vector<cocg_ast::Action>& actions,
     const cocg::DomainExpert& domain_expert);
-
 }  // namespace cocg
 
 #endif  // COCG_CORE_SUBGRAPH_H_

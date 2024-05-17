@@ -22,6 +22,19 @@ std::shared_ptr<cocg::ProblemExpert> apply_actuation_action(
   return goal_state;
 }
 
+std::string get_grounded_action_string(const cocg_ast::Action& action) {
+  std::string action_name = "(" + action.name;
+  for (auto p : action.parameters) {
+    action_name += " " + p.name;
+  }
+  action_name += ")";
+  return action_name;
+}
+
+std::string get_fact_string(const cocg_ast::Tree& fact) {
+  return parser::pddl::toString(fact);
+}
+
 std::shared_ptr<cocg::ProblemExpert> apply_sensing_action(
     std::shared_ptr<cocg::ProblemExpert> init_state,
     const cocg_ast::Action& action, bool sensing_result, bool new_state) {

@@ -82,13 +82,56 @@ std::shared_ptr<SubGraphNode> build_cocg_subgraph(
 std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
     std::shared_ptr<cocg::ProblemExpert> init_state,
     std::shared_ptr<cocg::ProblemExpert> goal_state,
-    const std::vector<cocg_ast::Action> actions,
+    const std::vector<cocg_ast::Action>& actions,
     const cocg::DomainExpert& domain_expert) {
+  // Return value
   std::vector<std::vector<cocg_ast::Action>> ret_action_layers;
+  // A new propositon-action graph
+  PAGraph pa_graph;
+  bool solved = false;
 
-  // step 1: create graph
+  // Step 1: build the first(No.0) state and action layer
+  StateLayerMap init_state_layer;
+  for (const auto& pred : init_state->getPredicates()) {
+    std::shared_ptr<cocg_ast::Tree> fact =
+        std::make_shared<cocg_ast::Tree>(pred);
+    std::shared_ptr<PGStateNode> state_node =
+        std::make_shared<PGStateNode>(*fact);
+    init_state_layer[get_fact_string(*fact)] = state_node;
+  }
+  pa_graph.state_layers.push_back(init_state_layer);
+  pa_graph.action_layers.push_back({});
+  pa_graph.state_mutex_layers.push_back({});
+  pa_graph.action_mutex_layers.push_back({});
+  pa_graph.layers++;
+  // get the goal state in string format
+  std::vector<std::string> goals;
+  for (const auto& pred : goal_state->getPredicates()) {
+    goals.push_back(parser::pddl::toString(pred));
+  }
 
-  // step 2: 
+  // Step 2: expand the graph until the goal facts all appear in the last state,
+  // without state mutex
+  create_init_graph(goals, pa_graph, actions);
+
+  // Step 3: Extract the graph to get a solution without any mutex
+  while (true) {
+    std::tuple<bool, std::vector<ActionLayerMap>> ret =
+        extract_solution(goals, pa_graph, actions);
+    solved = std::get<0>(ret);
+    if (solved) {
+      auto action_node_layers = std::get<1>(ret);
+      for (int i = 0; i < action_node_layers.size(); i++) {
+        for (const auto& it : action_node_layers[i]) {
+          ret_action_layers[i].push_back(it.second->action_);
+        }
+      }
+      break;
+    } else {
+      create_graph_layer(goals, pa_graph, actions);
+    }
+  }
+
   return ret_action_layers;
 }
 }  // namespace cocg
