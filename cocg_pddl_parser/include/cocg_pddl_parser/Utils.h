@@ -139,6 +139,10 @@ std::vector<cocg_ast::Tree> getSubtrees(const cocg_ast::Tree& tree);
 
 cocg_ast::Tree getNegativeTreeFromPredicate(const cocg_ast::Node& predicate);
 
+// get literal from a tree, store them in the results
+void get_facts_string(const cocg_ast::Tree& tree,
+                      std::vector<std::string>& results);
+
 void getSubtreeChildren(cocg_ast::Tree& subtree, const cocg_ast::Tree& tree,
                         uint32_t tree_parent, uint32_t subtree_parent);
 

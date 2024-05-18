@@ -981,6 +981,17 @@ cocg_ast::Tree getNegativeTreeFromPredicate(const cocg_ast::Node& predicate){
   return ret;
 }
 
+void get_facts_string(const cocg_ast::Tree& tree,
+                      std::vector<std::string>& results) {
+  std::vector<cocg_ast::Node> predicates;
+  parser::pddl::getPredicates(predicates, tree);
+  for (const auto& pred : predicates) {
+    cocg_ast::Tree temp(pred);
+    auto fact = parser::pddl::toString(pred, 0, pred.negate);
+    results.push_back(fact);
+  }
+}
+
 std::vector<uint32_t> getSubtreeIds(const cocg_ast::Tree& tree) {
   if (tree.nodes.empty()) {  // No expression
     return {};

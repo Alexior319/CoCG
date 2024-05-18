@@ -2,6 +2,7 @@
 #define COCG_CORE_COCG_GRAPHPLAN_H_
 
 #include <chrono>
+#include <functional>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -27,26 +28,33 @@ class PGActionNode {
     before_state_nodes_ = {};
     after_state_nodes_ = {};
   };
-  PGActionNode(
-      const cocg_ast::Action& action,
-      const std::vector<std::shared_ptr<PGStateNode>>& before_state_nodes = {},
-      const std::vector<std::shared_ptr<PGStateNode>>& after_state_nodes = {})
+  PGActionNode(const cocg_ast::Action& action,
+               const std::unordered_set<std::shared_ptr<PGStateNode>>&
+                   before_state_nodes = {},
+               const std::unordered_set<std::shared_ptr<PGStateNode>>&
+                   after_state_nodes = {})
       : action_(action),
         before_state_nodes_(before_state_nodes),
         after_state_nodes_(after_state_nodes) {
     is_noop_ = false;
+    parser::pddl::get_facts_string(action.preconditions, precond_facts_);
+    parser::pddl::get_facts_string(action.effects, effect_facts_);
   }
   PGActionNode(const PGActionNode& other) {
     action_ = other.action_;
     is_noop_ = other.is_noop_;
     before_state_nodes_ = other.before_state_nodes_;
     after_state_nodes_ = other.after_state_nodes_;
+    precond_facts_ = other.precond_facts_;
+    effect_facts_ = other.effect_facts_;
   };
   ~PGActionNode() = default;
   bool is_noop_;
   cocg_ast::Action action_;
-  std::vector<std::shared_ptr<PGStateNode>> before_state_nodes_;
-  std::vector<std::shared_ptr<PGStateNode>> after_state_nodes_;
+  std::vector<std::string> precond_facts_;
+  std::vector<std::string> effect_facts_;
+  std::unordered_set<std::shared_ptr<PGStateNode>> before_state_nodes_;
+  std::unordered_set<std::shared_ptr<PGStateNode>> after_state_nodes_;
 };
 
 /**
@@ -54,11 +62,11 @@ class PGActionNode {
  */
 class PGStateNode {
  public:
-  PGStateNode(
-      const cocg_ast::Tree& fact,
-      const std::vector<std::shared_ptr<PGActionNode>>& before_action_nodes =
-          {},
-      const std::vector<std::shared_ptr<PGActionNode>>& after_action_nodes = {})
+  PGStateNode(const cocg_ast::Tree& fact,
+              const std::unordered_set<std::shared_ptr<PGActionNode>>&
+                  before_action_nodes = {},
+              const std::unordered_set<std::shared_ptr<PGActionNode>>&
+                  after_action_nodes = {})
       : fact_(fact),
         before_action_nodes_(before_action_nodes),
         after_action_nodes_(after_action_nodes) {}
@@ -69,8 +77,8 @@ class PGStateNode {
   };
   ~PGStateNode() = default;
   cocg_ast::Tree fact_;
-  std::vector<std::shared_ptr<PGActionNode>> before_action_nodes_;
-  std::vector<std::shared_ptr<PGActionNode>> after_action_nodes_;
+  std::unordered_set<std::shared_ptr<PGActionNode>> before_action_nodes_;
+  std::unordered_set<std::shared_ptr<PGActionNode>> after_action_nodes_;
 };
 
 // (pred_name arg1 arg2 ...) or (not (pred_name arg1 arg2...)) -> state node
@@ -79,9 +87,7 @@ using StateLayerMap =
 
 // Mutex of a state node with other state nodes in the same state layer
 // state node -> vector of state nodes
-using StateMutex =
-    std::unordered_map<std::shared_ptr<PGStateNode>,
-                       std::vector<std::shared_ptr<PGStateNode>>>;
+using StateMutexMap = std::unordered_map<std::string, std::vector<std::string>>;
 
 // (action_name arg1 arg2 ...) -> action node
 using ActionLayerMap =
@@ -89,9 +95,8 @@ using ActionLayerMap =
 
 // Mutex of an action node with other action nodes in the same action layer
 // action node -> vector of action nodes
-using ActionMutex =
-    std::unordered_map<std::shared_ptr<PGActionNode>,
-                       std::vector<std::shared_ptr<PGActionNode>>>;
+using ActionMutexMap =
+    std::unordered_map<std::string, std::vector<std::string>>;
 
 // Proposition Layer(PL)-Action Layer(AL) Graph
 // PL-AL-PL...AL-PL
@@ -110,9 +115,9 @@ struct PAGraph {
   // Vector of action nodes layers
   std::vector<ActionLayerMap> action_layers;
   // Contains the state/fact/literal(proposition) mutex in each state layer
-  std::vector<StateMutex> state_mutex_layers;
+  std::vector<StateMutexMap> state_mutex_layers;
   // Contains the action mutex in each action layer
-  std::vector<ActionMutex> action_mutex_layers;
+  std::vector<ActionMutexMap> action_mutex_layers;
 };
 
 /**
@@ -130,8 +135,7 @@ void create_init_graph(const std::vector<std::string>& goals, PAGraph& pa_graph,
  * @param pa_graph the graph to create
  * @param actions grounded action set
  */
-void create_graph_layer(const std::vector<std::string>& goals,
-                        PAGraph& pa_graph,
+void create_graph_layer(PAGraph& pa_graph,
                         const std::vector<cocg_ast::Action>& actions);
 
 /**
@@ -142,7 +146,7 @@ void create_graph_layer(const std::vector<std::string>& goals,
  * @return (solution_is_valid, solution)
  */
 std::tuple<bool, std::vector<ActionLayerMap>> extract_solution(
-    const std::vector<std::string>& goals, PAGraph& pa_graph,
+    const std::vector<std::string>& goals, const PAGraph& pa_graph,
     const std::vector<cocg_ast::Action>& actions);
 
 /**
