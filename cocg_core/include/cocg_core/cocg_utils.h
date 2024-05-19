@@ -37,6 +37,19 @@ std::string get_grounded_action_string(const cocg_ast::Action& action);
 std::string get_fact_string(const cocg_ast::Tree& fact);
 
 /**
+ * @brief get the atom of a fact
+ * @param fact the fact encoded in a string
+ * @return the atom (without 'not') of the fact
+ */
+std::string get_atom(const std::string& fact);
+/**
+ * @brief jugde whether two facts are negated
+ * @param s1 the first fact
+ * @param s2 the second fact
+ */
+bool negated_facts(const std::string& s1, const std::string& s2);
+
+/**
  * @brief apply the effects of a sensing action to a state
  * @param init_state the initial state stored in a problem expert
  * @param action the sensing action

@@ -11,6 +11,7 @@
 #include <unordered_set>
 
 #include "cocg_ast/action.h"
+#include "cocg_core/cocg_utils.h"
 #include "cocg_core/types.h"
 
 namespace cocg {
@@ -49,6 +50,7 @@ class PGActionNode {
     effect_facts_ = other.effect_facts_;
   };
   ~PGActionNode() = default;
+  std::string get_action() { return get_grounded_action_string(this->action_); }
   bool is_noop_;
   cocg_ast::Action action_;
   std::vector<std::string> precond_facts_;
@@ -70,12 +72,18 @@ class PGStateNode {
       : fact_(fact),
         before_action_nodes_(before_action_nodes),
         after_action_nodes_(after_action_nodes) {}
+  PGStateNode(const std::string fact_str) {
+    this->fact_ = parser::pddl::fromString(fact_str);
+    this->before_action_nodes_ = {};
+    this->after_action_nodes_ = {};
+  }
   PGStateNode(const PGStateNode& other) {
     fact_ = other.fact_;
     before_action_nodes_ = other.before_action_nodes_;
     after_action_nodes_ = other.after_action_nodes_;
   };
   ~PGStateNode() = default;
+  std::string get_fact() { return get_fact_string(this->fact_); }
   cocg_ast::Tree fact_;
   std::unordered_set<std::shared_ptr<PGActionNode>> before_action_nodes_;
   std::unordered_set<std::shared_ptr<PGActionNode>> after_action_nodes_;
@@ -86,17 +94,18 @@ using StateLayerMap =
     std::unordered_map<std::string, std::shared_ptr<PGStateNode>>;
 
 // Mutex of a state node with other state nodes in the same state layer
-// state node -> vector of state nodes
-using StateMutexMap = std::unordered_map<std::string, std::vector<std::string>>;
+// state node -> set of state nodes
+using StateMutexMap =
+    std::unordered_map<std::string, std::unordered_set<std::string>>;
 
 // (action_name arg1 arg2 ...) -> action node
 using ActionLayerMap =
     std::unordered_map<std::string, std::shared_ptr<PGActionNode>>;
 
 // Mutex of an action node with other action nodes in the same action layer
-// action node -> vector of action nodes
+// action node -> set of action nodes
 using ActionMutexMap =
-    std::unordered_map<std::string, std::vector<std::string>>;
+    std::unordered_map<std::string, std::unordered_set<std::string>>;
 
 // Proposition Layer(PL)-Action Layer(AL) Graph
 // PL-AL-PL...AL-PL
@@ -164,6 +173,16 @@ bool goal_contained_in_state_layer(const std::vector<std::string>& goals,
  */
 bool exist_mutex_in_goal_layer(const std::vector<std::string>& goals,
                                const PAGraph& pa_graph);
+
+/**
+ * @brief check if two facts are mutex in a state layer
+ * @param fact1 the first fact
+ * @param fact2 the second fact
+ * @param state_mutex_map the state mutex map
+ */
+bool two_facts_mutex_in_layer(const std::string& fact1,
+                              const std::string& fact2,
+                              const StateMutexMap& state_mutex_map);
 }  // namespace cocg
 
 #endif  // COCG_CORE_COCG_GRAPHPLAN_H_

@@ -113,4 +113,25 @@ void print_cont_plan_tree(ContPlanNode::SharedPtr root) {
   if (root->true_node != root->false_node)
     print_cont_plan_tree(root->false_node);
 }
+
+bool negated_facts(const std::string& s1, const std::string& s2) {
+  // check the propositions are the same
+  if (get_atom(s1) != get_atom(s2)) return false;
+  if (s1.find("(not ") != std::string::npos &&
+      s2.find("(not ") == std::string::npos)
+    return true;
+  if (s1.find("(not ") == std::string::npos &&
+      s2.find("(not ") != std::string::npos)
+    return true;
+  return false;
+}
+
+std::string get_atom(const std::string& fact) {
+  std::string atom = fact;
+  if (atom.find("(not ") != std::string::npos) {
+    atom = atom.substr(5, atom.length() - 6);
+  }
+  return atom;
+}
+
 }  // namespace cocg

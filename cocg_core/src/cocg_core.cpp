@@ -128,7 +128,7 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
       }
       break;
     } else {
-      create_graph_layer(goals, pa_graph, actions);
+      create_graph_layer(pa_graph, actions);
     }
   }
 
