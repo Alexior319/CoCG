@@ -6,6 +6,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <stack>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -151,12 +152,10 @@ void create_graph_layer(PAGraph& pa_graph,
  * @brief extract the graph to get a satisfiable solution
  * @param goals vectors of strings that describe the goal states
  * @param pa_graph the graph to create
- * @param actions grounded action set
  * @return (solution_is_valid, solution)
  */
 std::tuple<bool, std::vector<ActionLayerMap>> extract_solution(
-    const std::vector<std::string>& goals, const PAGraph& pa_graph,
-    const std::vector<cocg_ast::Action>& actions);
+    const std::vector<std::string>& goals, const PAGraph& pa_graph);
 
 /**
  * @brief check if the StateLayer contains all the goal facts

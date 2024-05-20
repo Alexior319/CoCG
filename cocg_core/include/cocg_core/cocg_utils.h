@@ -24,7 +24,8 @@ std::shared_ptr<cocg::ProblemExpert> apply_actuation_action(
 /**
  * @brief get the name and parameters of a grounded action
  * @param action the action to get the name and parameters
- * @return string format: (action_name arg1 ...)
+ * @return string format: (action_name arg1 ...), for noop: (_noop fact) where
+ * fact: (predicate_name arg1 arg2 ...)
  */
 std::string get_grounded_action_string(const cocg_ast::Action& action);
 

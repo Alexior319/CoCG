@@ -39,8 +39,8 @@ void create_graph_layer(PAGraph& pa_graph,
     noop_node->action_.preconditions = it.second->fact_;
     noop_node->action_.effects = it.second->fact_;
 
-    // noop node name: "_noop" + fact
-    std::string noop_node_name = "_noop" + it.first;
+    // noop node name: "_noop " + fact
+    std::string noop_node_name = "_noop " + it.first;
     noop_node->action_.name = noop_node_name;
     next_action_layer[noop_node_name] = noop_node;
 
@@ -125,6 +125,14 @@ void create_graph_layer(PAGraph& pa_graph,
           }
         }
       }
+      for (auto a1 : it->second->after_state_nodes_) {
+        for (auto a2 : it2->second->before_state_nodes_) {
+          if (negated_facts(a1->get_fact(), a2->get_fact())) {
+            next_action_mutex_map[it->first].insert(it2->first);
+            next_action_mutex_map[it2->first].insert(it->first);
+          }
+        }
+      }
     }
   }
 
@@ -137,30 +145,60 @@ void create_graph_layer(PAGraph& pa_graph,
         next_state_mutex_map[it->first].insert(it2->first);
         next_state_mutex_map[it2->first].insert(it->first);
       } else {
-        // 2. inconsistent support: check if the actions that lead to the facts
-        // are mutex
-        for (auto a1 : it->second->before_action_nodes_) {
-          for (auto a2 : it2->second->before_action_nodes_) {
-            if (next_action_mutex_map[a1->action_.name].find(
-                    a2->action_.name) !=
-                next_action_mutex_map[a1->action_.name].end()) {
-              next_state_mutex_map[it->first].insert(it2->first);
-              next_state_mutex_map[it2->first].insert(it->first);
+        // 2. inconsistent support: check if all the actions that lead to the
+        // facts are mutex, if one pair of actions are not mutex, then the facts
+        // are not
+        bool exist_pair_not_mutex = false;
+        bool exist_mutex_pairs = false;
+        for (const auto& a1 : it->second->before_action_nodes_) {
+          for (const auto& a2 : it2->second->before_action_nodes_) {
+            if (next_action_mutex_map[a1->get_action()].find(
+                    a2->get_action()) ==
+                next_action_mutex_map[a1->get_action()].end()) {
+              // at least one pair of actions are not mutex
+              exist_pair_not_mutex = true;
+              break;
+            } else {
+              exist_mutex_pairs = true;
             }
           }
+          if (exist_pair_not_mutex) {
+            break;
+          }
+        }
+        // all the action pairs are mutex, then the facts are mutex
+        if (!exist_pair_not_mutex && exist_mutex_pairs) {
+          next_state_mutex_map[it->first].insert(it2->first);
+          next_state_mutex_map[it2->first].insert(it->first);
         }
       }
     }
   }
 }
 
-std::tuple<bool, std::vector<ActionLayerMap>> extract_solution(
+bool extract_backward_from_layer(
     const std::vector<std::string>& goals, const PAGraph& pa_graph,
-    const std::vector<cocg_ast::Action>& actions) {
-  std::tuple<bool, std::vector<ActionLayerMap>> ret;
+    uint32_t cur_layer, std::vector<ActionLayerMap>& extraction_layers) {
+  bool found_extraction = false;
+  std::vector<ActionLayerMap> action_layers;
   // TODO
+  // If we are can go to initial state layer, we found the solution
+  if (cur_layer == 0) {
+    found_extraction = true;
+  } else {
+    // find actions combinations that can lead to the goals
+    }
 
-  return ret;
+  return found_extraction;
+}
+
+std::tuple<bool, std::vector<ActionLayerMap>> extract_solution(
+    const std::vector<std::string>& goals, const PAGraph& pa_graph) {
+  bool solved = false;
+  std::vector<ActionLayerMap> extraction_layers(pa_graph.layers);
+  solved = extract_backward_from_layer(goals, pa_graph, pa_graph.layers - 1,
+                                       extraction_layers);
+  return std::make_tuple(solved, extraction_layers);
 }
 
 bool goal_contained_in_state_layer(const std::vector<std::string>& goals,

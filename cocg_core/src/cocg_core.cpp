@@ -117,7 +117,7 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
   // Step 3: Extract the graph to get a solution without any mutex
   while (true) {
     std::tuple<bool, std::vector<ActionLayerMap>> ret =
-        extract_solution(goals, pa_graph, actions);
+        extract_solution(goals, pa_graph);
     solved = std::get<0>(ret);
     if (solved) {
       auto action_node_layers = std::get<1>(ret);
