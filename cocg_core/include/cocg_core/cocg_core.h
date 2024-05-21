@@ -48,7 +48,7 @@ traverse_contingent_planning_tree(
 std::shared_ptr<SubGraphNode> build_cocg_subgraph(
     std::shared_ptr<cocg::ProblemExpert> init_state,
     std::shared_ptr<cocg::ProblemExpert> goal_state,
-    std::vector<cocg_ast::Action::SharedPtr> actions,
+    std::vector<cocg_ast::Action> actions,
     cocg::ContPlanNode::SharedPtr node, float t0,
     cocg::DomainExpert& domain_expert);
 

@@ -7,19 +7,31 @@ void create_init_graph(const std::vector<std::string>& goals, PAGraph& pa_graph,
                        const std::vector<cocg_ast::Action>& actions) {
   // expand the graph until all goals are contained in the last layer
   while (!goal_contained_in_state_layer(
-      goals, pa_graph.state_layers[pa_graph.layers])) {
+      goals, pa_graph.state_layers[pa_graph.layers - 1])) {
     create_graph_layer(pa_graph, actions);
   }
+
+#ifdef OUTPUT_DEBUG_INFO
+  std::cout
+      << "[PAGraph] Goals all found in the last state layer, total layers: "
+      << pa_graph.layers << std::endl;
+#endif
 
   // if the goals in the last state layer are mutex, continue expanding
   while (exist_mutex_in_goal_layer(goals, pa_graph)) {
     create_graph_layer(pa_graph, actions);
   }
+
+#ifdef OUTPUT_DEBUG_INFO
+  std::cout << "[PAGraph] Goals all found in the last state layer, without "
+               "mutex, total layers: "
+            << pa_graph.layers << std::endl;
+#endif
 }
 
 void create_graph_layer(PAGraph& pa_graph,
                         const std::vector<cocg_ast::Action>& actions) {
-  uint32_t cur_layer = pa_graph.layers, next_layer = cur_layer + 1;
+  uint32_t cur_layer = pa_graph.layers - 1, next_layer = cur_layer + 1;
   StateLayerMap next_state_layer;
   ActionLayerMap next_action_layer;
   StateMutexMap next_state_mutex_map;
@@ -34,21 +46,21 @@ void create_graph_layer(PAGraph& pa_graph,
   }
 
   // make the noop layer
+  pa_graph.state_layers.push_back(next_state_layer);
   for (auto& it : pa_graph.state_layers[cur_layer]) {
     std::shared_ptr<PGActionNode> noop_node = std::make_shared<PGActionNode>();
     noop_node->action_.preconditions = it.second->fact_;
     noop_node->action_.effects = it.second->fact_;
 
-    // noop node name: "_noop " + fact
-    std::string noop_node_name = "_noop " + it.first;
+    // noop node name: "(_noop " + fact + ")"
+    std::string noop_node_name = "(_noop " + it.first + ")";
     noop_node->action_.name = noop_node_name;
     next_action_layer[noop_node_name] = noop_node;
 
     // make connections, seemed not necessary since string+map is ok
     it.second->after_action_nodes_.insert(noop_node);
     noop_node->before_state_nodes_.insert(it.second);
-    pa_graph.state_layers[next_layer][it.first]->before_action_nodes_.insert(
-        noop_node);
+    next_state_layer[it.first]->before_action_nodes_.insert(noop_node);
   }
 
   // insert the applicable actions into next layer
@@ -70,6 +82,7 @@ void create_graph_layer(PAGraph& pa_graph,
     if (is_applicable) {
       std::shared_ptr<PGActionNode> a_node =
           std::make_shared<PGActionNode>(action);
+      next_action_layer[a_node->get_action()] = a_node;
       // make precondition connections
       for (const auto& precond : a_node->precond_facts_) {
         a_node->before_state_nodes_.insert(
@@ -78,8 +91,8 @@ void create_graph_layer(PAGraph& pa_graph,
 
       // apply effects and make connections
       for (const auto& effect : a_node->effect_facts_) {
-        auto it = pa_graph.state_layers[next_layer].find(effect);
-        if (it == pa_graph.state_layers[next_layer].end()) {
+        auto it = next_state_layer.find(effect);
+        if (it == next_state_layer.end()) {
           std::shared_ptr<PGStateNode> new_node =
               std::make_shared<PGStateNode>(effect);
           next_state_layer[effect] = new_node;
@@ -90,6 +103,14 @@ void create_graph_layer(PAGraph& pa_graph,
       }
     }
   }
+
+#ifdef OUTPUT_DEBUG_INFO
+  std::cout << "[PAGraph] Building next layer, No." << next_layer << std::endl;
+  std::cout << "[PAGraph] Next state layer: ";
+  print_state_layer(next_state_layer);
+  std::cout << "[PAGraph] Next action layer: ";
+  print_action_layer(next_action_layer);
+#endif
 
   // find mutex actions
   for (auto it = next_action_layer.begin(); it != next_action_layer.end();
@@ -174,6 +195,13 @@ void create_graph_layer(PAGraph& pa_graph,
       }
     }
   }
+
+  // expand the graph
+  pa_graph.state_layers.push_back(next_state_layer);
+  pa_graph.action_layers.push_back(next_action_layer);
+  pa_graph.state_mutex_layers.push_back(next_state_mutex_map);
+  pa_graph.action_mutex_layers.push_back(next_action_mutex_map);
+  pa_graph.layers++;
 }
 
 bool extract_backward_from_layer(
@@ -249,6 +277,7 @@ bool extract_backward_from_layer(
   return found_extraction;
 }
 
+// TODO: BUG HERE
 std::tuple<bool, std::vector<ActionLayerMap>> extract_solution(
     const std::vector<std::string>& goals, const PAGraph& pa_graph) {
   bool solved = false;
@@ -261,15 +290,15 @@ std::tuple<bool, std::vector<ActionLayerMap>> extract_solution(
 
 bool goal_contained_in_state_layer(const std::vector<std::string>& goals,
                                    const StateLayerMap& state_layer) {
-  bool goal_contained = false;
   for (const auto& goal : goals) {
     if (state_layer.find(goal) == state_layer.end()) {
-      goal_contained = false;
-      break;
+#ifdef OUTPUT_DEBUG_INFO
+      std::cout << "[PAGraph] Goal not found: " << goal << std::endl;
+#endif
+      return false;
     }
-    goal_contained = true;
   }
-  return goal_contained;
+  return true;
 }
 
 bool exist_mutex_in_goal_layer(const std::vector<std::string>& goals,
@@ -316,5 +345,19 @@ bool two_actions_mutex_in_layer(const std::string& action1,
     }
   }
   return mutex;
+}
+
+void print_state_layer(const StateLayerMap& state_layer) {
+  for (const auto& it : state_layer) {
+    std::cout << it.first << " ";
+  }
+  std::cout << std::endl;
+}
+
+void print_action_layer(const ActionLayerMap& action_layer) {
+  for (const auto& it : action_layer) {
+    std::cout << it.first << " ";
+  }
+  std::cout << std::endl;
 }
 }  // namespace cocg

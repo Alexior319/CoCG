@@ -93,6 +93,7 @@ class PGStateNode {
 // (pred_name arg1 arg2 ...) or (not (pred_name arg1 arg2...)) -> state node
 using StateLayerMap =
     std::unordered_map<std::string, std::shared_ptr<PGStateNode>>;
+void print_state_layer(const StateLayerMap& state_layer);
 
 // Mutex of a state node with other state nodes in the same state layer
 // state node -> set of state nodes
@@ -102,6 +103,7 @@ using StateMutexMap =
 // (action_name arg1 arg2 ...) -> action node
 using ActionLayerMap =
     std::unordered_map<std::string, std::shared_ptr<PGActionNode>>;
+void print_action_layer(const ActionLayerMap& action_layer);
 
 // Mutex of an action node with other action nodes in the same action layer
 // action node -> set of action nodes

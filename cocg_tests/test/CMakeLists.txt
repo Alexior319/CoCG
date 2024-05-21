@@ -15,3 +15,12 @@ add_test(
   COMMAND cocg_core_test
 )
 
+add_executable(cocg_graphplan_test cocg_graphplan_test.cpp)
+target_link_libraries(cocg_graphplan_test cocg_core cff_plan_solver gtest gtest_main pthread)
+add_test(
+  NAME cocg_graphplan_test
+  COMMAND cocg_graphplan_test
+)
+
+add_executable(cocg_main_test cocg_main_test.cpp)
+target_link_libraries(cocg_main_test cocg_core cff_plan_solver)

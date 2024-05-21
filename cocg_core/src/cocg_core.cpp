@@ -110,6 +110,11 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
     goals.push_back(parser::pddl::toString(pred));
   }
 
+#ifdef OUTPUT_DEBUG_INFO
+  std::cout << "[PAGraph] Initial state layer: ";
+  print_state_layer(pa_graph.state_layers[0]);
+#endif
+
   // Step 2: expand the graph until the goal facts all appear in the last state,
   // without state mutex
   create_init_graph(goals, pa_graph, actions);

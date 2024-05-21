@@ -12,11 +12,13 @@ std::shared_ptr<cocg::ProblemExpert> apply_actuation_action(
     goal_state = init_state;
   }
 
-  std::cout << "Applying actuation action: " << action.name;
+#ifdef OUTPUT_DEBUG_INFO
+  std::cout << "Applying actuation action: (" << action.name;
   for (auto p : action.parameters) {
-    std::cout << " " << p.name << " - " << p.type << "\t";
+    std::cout << " " << p.name;
   }
-  std::cout << "\n";
+  std::cout << ")\n";
+#endif
 
   cocg::apply(action.effects, goal_state);
   return goal_state;
@@ -45,14 +47,18 @@ std::shared_ptr<cocg::ProblemExpert> apply_sensing_action(
     goal_state = init_state;
   }
 
-  std::cout << "Applying sensing action: " << action.name;
-  for (auto p : action.parameters) {
-    std::cout << " " << p.name << " - " << p.type << " ";
-  }
-  std::cout << "sensing result: " << sensing_result << "\n";
+  std::string observe_str = parser::pddl::toString(action.observe, 1);
 
-  std::string observe_unknown_str =
-      "(unknown " + parser::pddl::toString(action.observe, 1) + ")";
+#ifdef OUTPUT_DEBUG_INFO
+  std::cout << "Applying sensing action: (" << action.name;
+  for (auto p : action.parameters) {
+    std::cout << " " << p.name;
+  }
+  std::cout << ") sensing: " << observe_str << " result: " << sensing_result
+            << "\n";
+#endif
+
+  std::string observe_unknown_str = "(unknown " + observe_str + ")";
   cocg::Unknown observe_unknown = cocg::Unknown(observe_unknown_str);
 
   if (sensing_result) {
