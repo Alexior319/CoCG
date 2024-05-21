@@ -182,6 +182,30 @@ bool exist_mutex_in_goal_layer(const std::vector<std::string>& goals,
 bool two_facts_mutex_in_layer(const std::string& fact1,
                               const std::string& fact2,
                               const StateMutexMap& state_mutex_map);
+
+/**
+ * @brief check if two actions are mutex in an action layer
+ * @param action1 the first action
+ * @param action2 the second action
+ * @param action_mutex_map the layer of action mutex map
+ * @return true if the two actions are mutex
+ */
+bool two_actions_mutex_in_layer(const std::string& action1,
+                                const std::string& action2,
+                                const ActionMutexMap& action_mutex_map);
+
+/**
+ * @brief start extracting the goals from the graph in a specific layer
+ * @param cur_goals the goals to extract in current layer
+ * @param pa_graph the graph to extract
+ * @param cur_layer the current layer to extract
+ * @param extraction_layers the layers extracted
+ * @param prev_goals the preconditions of extracted actions
+ */
+bool extract_backward_from_layer(
+    const std::unordered_set<std::string>& cur_goals, const PAGraph& pa_graph,
+    uint32_t cur_layer, std::vector<ActionLayerMap>& extraction_layers,
+    std::unordered_set<std::string> prev_goals = {});
 }  // namespace cocg
 
 #endif  // COCG_CORE_COCG_GRAPHPLAN_H_

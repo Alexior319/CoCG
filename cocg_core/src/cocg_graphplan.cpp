@@ -177,17 +177,74 @@ void create_graph_layer(PAGraph& pa_graph,
 }
 
 bool extract_backward_from_layer(
-    const std::vector<std::string>& goals, const PAGraph& pa_graph,
-    uint32_t cur_layer, std::vector<ActionLayerMap>& extraction_layers) {
+    const std::unordered_set<std::string>& cur_goals, const PAGraph& pa_graph,
+    uint32_t cur_layer, std::vector<ActionLayerMap>& extraction_layers,
+    std::unordered_set<std::string> prev_goals) {
   bool found_extraction = false;
-  std::vector<ActionLayerMap> action_layers;
-  // TODO
+  std::unordered_set<std::string> remained_goals = cur_goals;
+
   // If we are can go to initial state layer, we found the solution
   if (cur_layer == 0) {
     found_extraction = true;
   } else {
-    // find actions combinations that can lead to the goals
+    // goals satisfied in current layer, extract the previous layer
+    if (remained_goals.size() == 0) {
+      extract_backward_from_layer(prev_goals, pa_graph, cur_layer - 1,
+                                  extraction_layers);
+    } else {
+      // find the actions that can achieve the goals
+      for (const auto& goal : remained_goals) {
+        auto state_node_pair = pa_graph.state_layers[cur_layer].find(goal);
+        if (state_node_pair != pa_graph.state_layers[cur_layer].end()) {
+          for (const auto& action_node :
+               state_node_pair->second->before_action_nodes_) {
+            bool mutex = false;
+            // the chosen action is mutex with extracted actions
+            for (const auto& action_node2 : extraction_layers[cur_layer]) {
+              if (two_actions_mutex_in_layer(
+                      action_node->get_action(), action_node2.first,
+                      pa_graph.action_mutex_layers[cur_layer])) {
+                mutex = true;
+                break;
+              }
+            }
+            if (!mutex) {
+              // erase the goal in this layer
+              remained_goals.erase(goal);
+              // add the precondition facts to the prev_goals
+              for (const auto& precond : action_node->precond_facts_) {
+                prev_goals.insert(precond);
+              }
+
+              // add the action to the extraction map
+              extraction_layers[cur_layer][action_node->get_action()] =
+                  action_node;
+
+              // extract the current layer with the remained goals
+              found_extraction = extract_backward_from_layer(
+                  remained_goals, pa_graph, cur_layer, extraction_layers,
+                  prev_goals);
+              // if found, break the loop
+              if (found_extraction) {
+                break;
+              }
+
+              // if not found, remove the action from the extraction map
+              extraction_layers[cur_layer].erase(action_node->get_action());
+
+              // add the goal back to the remained goals set
+              remained_goals.insert(goal);
+
+              // remove the preconditions from the prev_goals
+              for (const auto& precond : action_node->precond_facts_) {
+                prev_goals.erase(precond);
+              }
+            }
+          }
+        }
+      }
     }
+  }
 
   return found_extraction;
 }
@@ -196,7 +253,8 @@ std::tuple<bool, std::vector<ActionLayerMap>> extract_solution(
     const std::vector<std::string>& goals, const PAGraph& pa_graph) {
   bool solved = false;
   std::vector<ActionLayerMap> extraction_layers(pa_graph.layers);
-  solved = extract_backward_from_layer(goals, pa_graph, pa_graph.layers - 1,
+  std::unordered_set<std::string> goals_set(goals.begin(), goals.end());
+  solved = extract_backward_from_layer(goals_set, pa_graph, pa_graph.layers - 1,
                                        extraction_layers);
   return std::make_tuple(solved, extraction_layers);
 }
@@ -240,6 +298,20 @@ bool two_facts_mutex_in_layer(const std::string& fact1,
       state_mutex_map.find(fact2) != state_mutex_map.end()) {
     if (state_mutex_map.at(fact1).find(fact2) !=
         state_mutex_map.at(fact1).end()) {
+      mutex = true;
+    }
+  }
+  return mutex;
+}
+
+bool two_actions_mutex_in_layer(const std::string& action1,
+                                const std::string& action2,
+                                const ActionMutexMap& action_mutex_map) {
+  bool mutex = false;
+  if (action_mutex_map.find(action1) != action_mutex_map.end() &&
+      action_mutex_map.find(action2) != action_mutex_map.end()) {
+    if (action_mutex_map.at(action1).find(action2) !=
+        action_mutex_map.at(action1).end()) {
       mutex = true;
     }
   }
