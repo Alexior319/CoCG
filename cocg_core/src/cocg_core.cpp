@@ -40,25 +40,27 @@ std::shared_ptr<SubGraphNode> build_cocg_subgraph(
       compute_planning_graph(init_state, goal_state, actions, domain_expert);
 
 #ifdef OUTPUT_DEBUG_INFO
-  std::cout << "-----------------------------\n";
+  std::cout << "------------------------------------\n";
   std::cout << "[SubGraphNode] Built subgraph, t0: " << t0 << "\n";
   print_action_layers(action_layers);
+  std::cout << "------------------------------------\n";
 #endif
 
-  int i = 1, k = action_layers.size();
-  for (; i <= k; i++) {
-    ret->actions_layers_[i] = action_layers[i];
-  }
+  int k = action_layers.size();
+  action_layers.swap(ret->actions_layers_);
 
+  // plus the null layer or the sensing node layer
   ret->layers_cnt_ = k + 1;
+  ret->actions_layers_.push_back({});
   if (node != nullptr) {
     cocg_ast::Action::SharedPtr action =
         convert_plan_node_to_ast(node, domain_expert);
-    ret->actions_layers_[k + 1] = {*action};
+    ret->actions_layers_[k] = {*action};
 
     // traverse the true part
+    // TODO: BUG HERE
     std::shared_ptr<cocg::ProblemExpert> next_true_mid_expert =
-        apply_sensing_action(init_state, *action, true, true);
+        apply_sensing_action(goal_state, *action, true, true);
     std::tuple<std::shared_ptr<cocg::ProblemExpert>,
                std::vector<cocg_ast::Action>, cocg::ContPlanNode::SharedPtr>
         next_true_tuple = traverse_contingent_planning_tree(
@@ -70,7 +72,7 @@ std::shared_ptr<SubGraphNode> build_cocg_subgraph(
 
     // traverse the false part
     std::shared_ptr<cocg::ProblemExpert> next_false_mid_expert =
-        apply_sensing_action(init_state, *action, false, true);
+        apply_sensing_action(goal_state, *action, false, true);
     std::tuple<std::shared_ptr<cocg::ProblemExpert>,
                std::vector<cocg_ast::Action>, cocg::ContPlanNode::SharedPtr>
         next_false_tuple = traverse_contingent_planning_tree(
@@ -79,8 +81,6 @@ std::shared_ptr<SubGraphNode> build_cocg_subgraph(
         next_false_mid_expert, std::get<0>(next_false_tuple),
         std::get<1>(next_false_tuple), std::get<2>(next_false_tuple),
         t0 + ret->layers_cnt_, domain_expert);
-  } else {
-    ret->actions_layers_[k + 1] = {};
   }
   return ret;
 }
@@ -130,20 +130,36 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
   create_init_graph(goals, pa_graph, actions);
 
   // Step 3: Extract the graph to get a solution without any mutex
+  // graph layers leq actions size (worst: sequential execution)
   while (pa_graph.action_layers.size() <= actions.size()) {
     std::tuple<bool, std::vector<ActionLayerMap>> ret =
         extract_solution(goals, pa_graph);
     solved = std::get<0>(ret);
     if (solved) {
       auto action_node_layers = std::get<1>(ret);
+      ret_action_layers.resize(action_node_layers.size());
       for (int i = 0; i < action_node_layers.size(); i++) {
         for (const auto& it : action_node_layers[i]) {
+          // ignore the noop actions
+          if (it.second->is_noop_) continue;
           ret_action_layers[i].push_back(it.second->action_);
         }
       }
+#ifdef OUTPUT_DEBUG_INFO
+      for (int i = 0; i < ret_action_layers.size(); i++) {
+        std::cout << "[PAGraph] Actions in layer No." << i << ": ";
+        for (int j = 0; j < ret_action_layers[i].size(); j++) {
+          std::cout << cocg::get_grounded_action_string(ret_action_layers[i][j])
+                    << " ";
+        }
+        std::cout << std::endl;
+      }
+      std::cout << "-----------------------------------------" << std::endl;
+#endif
       break;
     } else {
-      std::cout << "[PAGraph] Extracting failed, expand the graph..." << std::endl;
+      std::cout << "[PAGraph] Extracting failed, expand the graph..."
+                << std::endl;
       create_graph_layer(pa_graph, actions);
     }
   }

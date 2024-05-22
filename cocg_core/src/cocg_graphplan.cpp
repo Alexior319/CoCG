@@ -53,6 +53,7 @@ void create_graph_layer(PAGraph& pa_graph,
     // noop node name: "(_noop " + fact + ")"
     std::string noop_node_name = "(_noop " + it.first + ")";
     noop_node->action_.name = noop_node_name;
+    noop_node->is_noop_ = true;
     next_action_layer[noop_node_name] = noop_node;
 
     // make connections, seemed not necessary since string+map is ok
@@ -208,104 +209,111 @@ void create_graph_layer(PAGraph& pa_graph,
   pa_graph.layers++;
 }
 
-// TODO: BUG HERE
 std::tuple<bool, bool> extract_backward_from_layer(
     const std::unordered_set<std::string>& cur_goals, const PAGraph& pa_graph,
     uint32_t cur_layer, std::vector<ActionLayerMap>& extraction_layers,
     std::unordered_set<std::string> prev_goals) {
+  // backtracking algo: traverse layers until the first layer
+  // If we are can go to initial state layer, we found the solution
+  if (cur_layer == 0) {
+#ifdef OUTPUT_DEBUG_INFO
+    std::cout << "[PAGraph] Extracting to the initial layer, solved!"
+              << std::endl;
+#endif
+    return std::make_tuple<bool, bool>(true, true);
+  }
+
   bool found_extraction = false;
   bool goals_extracted_in_cur_layer = false;
   std::unordered_set<std::string> remained_goals = cur_goals;
 
-  // If we are can go to initial state layer, we found the solution
-  if (cur_layer == 0) {
-    found_extraction = true;
+  // goals satisfied in current layer, extract the previous layer
+  if (cur_goals.size() == 0) {
+    goals_extracted_in_cur_layer = true;
+#ifdef OUTPUT_DEBUG_INFO
+    std::cout << "-----------------------------------------" << std::endl;
+    std::cout << "[PAGraph] Goals satisfied in layer No." << cur_layer
+              << ", extracting the previous layer" << std::endl;
+#endif
+    auto prev_ret = extract_backward_from_layer(
+        prev_goals, pa_graph, cur_layer - 1, extraction_layers);
+    found_extraction = std::get<0>(prev_ret);
   } else {
-    // goals satisfied in current layer, extract the previous layer
-    if (cur_goals.size() == 0) {
-      goals_extracted_in_cur_layer = true;
-#ifdef OUTPUT_DEBUG_INFO
-      if (cur_layer > 1) {
-        std::cout << "-----------------------------------------" << std::endl;
-        std::cout << "[PAGraph] Goals satisfied in layer No." << cur_layer
-                  << ", extracting the previous layer" << std::endl;
-      }
-#endif
-      auto prev_ret = extract_backward_from_layer(
-          prev_goals, pa_graph, cur_layer - 1, extraction_layers);
-      found_extraction = std::get<0>(prev_ret);
-    } else {
-      // find the actions that can achieve the goals
-      for (const auto& goal : cur_goals) {
-        auto state_node_pair = pa_graph.state_layers[cur_layer].find(goal);
-        if (state_node_pair != pa_graph.state_layers[cur_layer].end()) {
-          for (const auto& action_node :
-               state_node_pair->second->before_action_nodes_) {
-            bool mutex = false;
-            // the chosen action is mutex with extracted actions
-            for (const auto& action_node2 : extraction_layers[cur_layer]) {
-              if (two_actions_mutex_in_layer(
-                      action_node->get_action(), action_node2.first,
-                      pa_graph.action_mutex_layers[cur_layer])) {
-                mutex = true;
-                break;
-              }
-            }
-            if (!mutex) {
-              // erase the goal in this layer
-              remained_goals.erase(goal);
-              // add the precondition facts to the prev_goals
-              for (const auto& precond : action_node->precond_facts_) {
-                prev_goals.insert(precond);
-              }
-
-              // add the action to the extraction map
-              extraction_layers[cur_layer][action_node->get_action()] =
-                  action_node;
-
-#ifdef OUTPUT_DEBUG_INFO
-              std::cout << ">>> [PAGraph] Action found: "
-                        << action_node->get_action() << ", for goal: " << goal
-                        << ", extracting remained goals: ";
-              for (const auto& g : remained_goals) {
-                std::cout << g << " ";
-              }
-              std::cout << std::endl;
-#endif
-
-              // extract the current layer with the remained goals
-              auto cur_remained_ret = extract_backward_from_layer(
-                  remained_goals, pa_graph, cur_layer, extraction_layers,
-                  prev_goals);
-              goals_extracted_in_cur_layer = std::get<1>(cur_remained_ret);
-              // if found, break the loop and find the next goal
-              if (goals_extracted_in_cur_layer) {
-                break;
-              }
-
-              // if not found, remove the action from the extraction map
-              extraction_layers[cur_layer].erase(action_node->get_action());
-
-              // add the goal back to the remained goals set
-              remained_goals.insert(goal);
-
-              // remove the preconditions from the prev_goals
-              for (const auto& precond : action_node->precond_facts_) {
-                prev_goals.erase(precond);
-              }
-
-#ifdef OUTPUT_DEBUG_INFO
-              std::cout << "<<< [PAGraph] Action found invalid: "
-                        << action_node->get_action() << ", for goal: " << goal
-                        << " for previous extraction, remained goals: ";
-              for (const auto& g : remained_goals) {
-                std::cout << g << " ";
-              }
-              std::cout << std::endl;
-#endif
+    // find the actions that can achieve the goals
+    for (const auto& goal : cur_goals) {
+      auto state_node_pair = pa_graph.state_layers[cur_layer].find(goal);
+      if (state_node_pair != pa_graph.state_layers[cur_layer].end()) {
+        for (const auto& action_node :
+             state_node_pair->second->before_action_nodes_) {
+          bool mutex = false;
+          // the chosen action is mutex with extracted actions
+          for (const auto& action_node2 : extraction_layers[cur_layer]) {
+            if (two_actions_mutex_in_layer(
+                    action_node->get_action(), action_node2.first,
+                    pa_graph.action_mutex_layers[cur_layer])) {
+              mutex = true;
+              break;
             }
           }
+          if (!mutex) {
+            // erase the goal in this layer
+            remained_goals.erase(goal);
+            // add the precondition facts to the prev_goals
+            for (const auto& precond : action_node->precond_facts_) {
+              prev_goals.insert(precond);
+            }
+
+            // add the action to the extraction map
+            extraction_layers[cur_layer][action_node->get_action()] =
+                action_node;
+
+#ifdef OUTPUT_DEBUG_INFO
+            std::cout << ">>> [PAGraph] Action found: "
+                      << action_node->get_action() << ", for goal: " << goal
+                      << ", extracting remained goals: ";
+            for (const auto& g : remained_goals) {
+              std::cout << g << " ";
+            }
+            std::cout << std::endl;
+#endif
+
+            // extract the current layer with the remained goals
+            auto cur_remained_ret =
+                extract_backward_from_layer(remained_goals, pa_graph, cur_layer,
+                                            extraction_layers, prev_goals);
+            found_extraction = std::get<0>(cur_remained_ret);
+            goals_extracted_in_cur_layer = std::get<1>(cur_remained_ret);
+            // if found, break the loop and find the next goal
+            if (goals_extracted_in_cur_layer) {
+              break;
+            }
+
+            // if not found, remove the action from the extraction map
+            extraction_layers[cur_layer].erase(action_node->get_action());
+
+            // add the goal back to the remained goals set
+            remained_goals.insert(goal);
+
+            // remove the preconditions from the prev_goals
+            for (const auto& precond : action_node->precond_facts_) {
+              prev_goals.erase(precond);
+            }
+
+#ifdef OUTPUT_DEBUG_INFO
+            std::cout << "<<< [PAGraph] Action found invalid: "
+                      << action_node->get_action() << ", for goal: " << goal
+                      << " for previous extraction, remained goals: ";
+            for (const auto& g : remained_goals) {
+              std::cout << g << " ";
+            }
+            std::cout << std::endl;
+#endif
+          }
         }
+      }
+      // goals in this layer all extracted and valid
+      if (goals_extracted_in_cur_layer) {
+        break;
       }
     }
   }

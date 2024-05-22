@@ -15,7 +15,7 @@ namespace cocg {
 struct SubGraphNode {
   float t0_;
   int layers_cnt_;
-  std::map<uint32_t, std::vector<cocg_ast::Action>> actions_layers_;
+  std::vector<std::vector<cocg_ast::Action>> actions_layers_;
   std::shared_ptr<SubGraphNode> next_true_;
   std::shared_ptr<SubGraphNode> next_false_;
 };
