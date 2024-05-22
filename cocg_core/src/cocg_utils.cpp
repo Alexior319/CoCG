@@ -140,4 +140,14 @@ std::string get_atom(const std::string& fact) {
   return atom;
 }
 
+void print_action_layers(
+    std::vector<std::vector<cocg_ast::Action>> action_layers) {
+  for (int i = 0; i < action_layers.size(); i++) {
+    std::cout << "Layer " << i << ": ";
+    for (int j = 0; j < action_layers[i].size(); j++) {
+      std::cout << get_grounded_action_string(action_layers[i][j]) << " ";
+    }
+    std::cout << std::endl;
+  }
+}
 }  // namespace cocg

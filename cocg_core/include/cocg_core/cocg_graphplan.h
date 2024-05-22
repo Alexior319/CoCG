@@ -203,8 +203,9 @@ bool two_actions_mutex_in_layer(const std::string& action1,
  * @param cur_layer the current layer to extract
  * @param extraction_layers the layers extracted
  * @param prev_goals the preconditions of extracted actions
+ * @return (overall_extracted, cur_layer_extracted)
  */
-bool extract_backward_from_layer(
+std::tuple<bool, bool> extract_backward_from_layer(
     const std::unordered_set<std::string>& cur_goals, const PAGraph& pa_graph,
     uint32_t cur_layer, std::vector<ActionLayerMap>& extraction_layers,
     std::unordered_set<std::string> prev_goals = {});

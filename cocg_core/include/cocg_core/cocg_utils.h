@@ -89,6 +89,13 @@ cocg_ast::Action::SharedPtr convert_plan_node_to_ast(
  * @param root root node of the plan tree
  */
 void print_cont_plan_tree(ContPlanNode::SharedPtr root);
+
+/**
+ * @brief print the action layers
+ * @param action_layers the action layers
+ */
+void print_action_layers(
+    std::vector<std::vector<cocg_ast::Action>> action_layers);
 }  // namespace cocg
 
 #endif  // COCG_CORE_COCG_UTILS_H_

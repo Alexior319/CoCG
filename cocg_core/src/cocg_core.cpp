@@ -39,6 +39,12 @@ std::shared_ptr<SubGraphNode> build_cocg_subgraph(
   std::vector<std::vector<cocg_ast::Action>> action_layers =
       compute_planning_graph(init_state, goal_state, actions, domain_expert);
 
+#ifdef OUTPUT_DEBUG_INFO
+  std::cout << "-----------------------------\n";
+  std::cout << "[SubGraphNode] Built subgraph, t0: " << t0 << "\n";
+  print_action_layers(action_layers);
+#endif
+
   int i = 1, k = action_layers.size();
   for (; i <= k; i++) {
     ret->actions_layers_[i] = action_layers[i];
@@ -124,7 +130,7 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
   create_init_graph(goals, pa_graph, actions);
 
   // Step 3: Extract the graph to get a solution without any mutex
-  while (true) {
+  while (pa_graph.action_layers.size() <= actions.size()) {
     std::tuple<bool, std::vector<ActionLayerMap>> ret =
         extract_solution(goals, pa_graph);
     solved = std::get<0>(ret);
@@ -137,6 +143,7 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
       }
       break;
     } else {
+      std::cout << "[PAGraph] Extracting failed, expand the graph..." << std::endl;
       create_graph_layer(pa_graph, actions);
     }
   }
