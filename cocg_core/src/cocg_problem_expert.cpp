@@ -287,7 +287,7 @@ bool ProblemExpert::removeConditionalUnknown(const cocg_ast::Tree& condition,
     }
     return true;
   }
-  std::cout << "Conditional not found: " << parser::pddl::toString(*it)
+  std::cout << "Conditional not found: " << parser::pddl::toString(condition)
             << std::endl;
   return false;
 }
