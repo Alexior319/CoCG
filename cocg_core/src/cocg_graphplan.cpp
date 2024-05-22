@@ -23,9 +23,8 @@ void create_init_graph(const std::vector<std::string>& goals, PAGraph& pa_graph,
   }
 
 #ifdef OUTPUT_DEBUG_INFO
-  std::cout << "[PAGraph] Goals all found in the last state layer, without "
-               "mutex, total layers: "
-            << pa_graph.layers << std::endl;
+  std::cout << "[PAGraph] Init graph built, total layers: " << pa_graph.layers
+            << std::endl;
 #endif
 }
 
@@ -46,7 +45,6 @@ void create_graph_layer(PAGraph& pa_graph,
   }
 
   // make the noop layer
-  pa_graph.state_layers.push_back(next_state_layer);
   for (auto& it : pa_graph.state_layers[cur_layer]) {
     std::shared_ptr<PGActionNode> noop_node = std::make_shared<PGActionNode>();
     noop_node->action_.preconditions = it.second->fact_;
@@ -91,25 +89,31 @@ void create_graph_layer(PAGraph& pa_graph,
 
       // apply effects and make connections
       for (const auto& effect : a_node->effect_facts_) {
-        auto it = next_state_layer.find(effect);
-        if (it == next_state_layer.end()) {
+        auto s_node_pair = next_state_layer.find(effect);
+        // s_node not found, create a new one
+        if (s_node_pair == next_state_layer.end()) {
           std::shared_ptr<PGStateNode> new_node =
               std::make_shared<PGStateNode>(effect);
           next_state_layer[effect] = new_node;
-          it = next_state_layer.find(effect);
+          // make connections
+          a_node->after_state_nodes_.insert(new_node);
+          new_node->before_action_nodes_.insert(a_node);
+        } else {
+          // s_node found, make connections
+          a_node->after_state_nodes_.insert(s_node_pair->second);
+          s_node_pair->second->before_action_nodes_.insert(a_node);
         }
-        it->second->before_action_nodes_.insert(a_node);
-        a_node->after_state_nodes_.insert(it->second);
       }
     }
   }
 
 #ifdef OUTPUT_DEBUG_INFO
+  std::cout << "-----------------------------------" << std::endl;
   std::cout << "[PAGraph] Building next layer, No." << next_layer << std::endl;
-  std::cout << "[PAGraph] Next state layer: ";
-  print_state_layer(next_state_layer);
   std::cout << "[PAGraph] Next action layer: ";
   print_action_layer(next_action_layer);
+  std::cout << "[PAGraph] Next state layer: ";
+  print_state_layer(next_state_layer);
 #endif
 
   // find mutex actions
@@ -303,20 +307,19 @@ bool goal_contained_in_state_layer(const std::vector<std::string>& goals,
 
 bool exist_mutex_in_goal_layer(const std::vector<std::string>& goals,
                                const PAGraph& pa_graph) {
-  bool exist_mutex = false;
   for (auto goal1 = goals.begin(); goal1 != goals.end(); ++goal1) {
     for (auto goal2 = std::next(goal1); goal2 != goals.end(); ++goal2) {
       if (two_facts_mutex_in_layer(*goal1, *goal2,
                                    pa_graph.state_mutex_layers.back())) {
-        exist_mutex = true;
-        break;
+#ifdef OUTPUT_DEBUG_INFO
+        std::cout << "[PAGraph] Mutex found: " << *goal1 << " " << *goal2
+                  << std::endl;
+#endif
+        return true;
       }
     }
-    if (exist_mutex) {
-      break;
-    }
   }
-  return exist_mutex;
+  return false;
 }
 
 bool two_facts_mutex_in_layer(const std::string& fact1,

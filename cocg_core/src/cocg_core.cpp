@@ -111,8 +111,12 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
   }
 
 #ifdef OUTPUT_DEBUG_INFO
-  std::cout << "[PAGraph] Initial state layer: ";
+  std::cout << "-----------------------------\n";
+  std::cout << "[PAGraph] Initializing layer, No.0\n";
+  std::cout << "[PAGraph] State Layer: ";
   print_state_layer(pa_graph.state_layers[0]);
+  std::cout << "[PAGraph] Action Layer: ";
+  print_action_layer(pa_graph.action_layers[0]);
 #endif
 
   // Step 2: expand the graph until the goal facts all appear in the last state,
