@@ -6,7 +6,7 @@ std::tuple<std::shared_ptr<cocg::ProblemExpert>, std::vector<cocg_ast::Action>,
            cocg::ContPlanNode::SharedPtr>
 traverse_contingent_planning_tree(
     const std::shared_ptr<cocg::ProblemExpert> init_state,
-    cocg::ContPlanNode::SharedPtr root, cocg::DomainExpert& domain_expert) {
+    cocg::ContPlanNode::SharedPtr root, const cocg::DomainExpert& domain_expert) {
   std::shared_ptr<cocg::ProblemExpert> goal_state =
       std::make_shared<cocg::ProblemExpert>(init_state);
 
@@ -32,7 +32,7 @@ std::shared_ptr<SubGraphNode> build_cocg_subgraph(
     std::shared_ptr<cocg::ProblemExpert> init_state,
     std::shared_ptr<cocg::ProblemExpert> goal_state,
     std::vector<cocg_ast::Action> actions, cocg::ContPlanNode::SharedPtr node,
-    float t0, cocg::DomainExpert& domain_expert) {
+    float t0, const cocg::DomainExpert& domain_expert) {
   std::shared_ptr<SubGraphNode> ret = std::make_shared<SubGraphNode>();
   ret->t0_ = t0;
 
@@ -50,6 +50,7 @@ std::shared_ptr<SubGraphNode> build_cocg_subgraph(
   action_layers.swap(ret->actions_layers_);
 
   // plus the null layer or the sensing node layer
+  // TODO: BUG HERE
   ret->layers_cnt_ = k + 1;
   ret->actions_layers_.push_back({});
   if (node != nullptr) {
@@ -76,7 +77,7 @@ std::shared_ptr<SubGraphNode> build_cocg_subgraph(
                std::vector<cocg_ast::Action>, cocg::ContPlanNode::SharedPtr>
         next_false_tuple = traverse_contingent_planning_tree(
             next_false_mid_expert, node->false_node, domain_expert);
-    ret->next_true_ = build_cocg_subgraph(
+    ret->next_false_ = build_cocg_subgraph(
         next_false_mid_expert, std::get<0>(next_false_tuple),
         std::get<1>(next_false_tuple), std::get<2>(next_false_tuple),
         t0 + ret->layers_cnt_, domain_expert);
@@ -94,6 +95,15 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
   // A new propositon-action graph
   PAGraph pa_graph;
   bool solved = false;
+
+#ifdef OUTPUT_DEBUG_INFO
+  std::cout << "---------------------------------------------" << std::endl;
+  std::cout << "[PAGraph] applicable actions in this graph: ";
+  for (int j = 0; j < actions.size(); j++) {
+    std::cout << get_grounded_action_string(actions[j]) << " ";
+  }
+  std::cout << std::endl;
+#endif
 
   // Step 1: build the first(No.0) state and action layer
   StateLayerMap init_state_layer;
@@ -161,7 +171,7 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
                 << std::endl;
       if (pa_graph.layers > actions.size()) {
         std::cout << "--> [PAGraph] The layers of the graph has exceeded the "
-                     "actions num. <=================="
+                     "actions num when extracting. <=================="
                   << std::endl;
         break;
       }
@@ -174,4 +184,8 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
 
   return ret_action_layers;
 }
+
+// TODO
+void print_cocg_graph(std::shared_ptr<SubGraphNode> graph_root_node) {}
+
 }  // namespace cocg

@@ -99,7 +99,7 @@ void split_grounded_action(const std::string& grounded_action,
 
 cocg_ast::Action::SharedPtr convert_plan_node_to_ast(
     const cocg::ContPlanNode::SharedPtr node,
-    cocg::DomainExpert& domain_expert) {
+    const cocg::DomainExpert& domain_expert) {
   cocg_ast::Action::SharedPtr action;
 
   std::string action_name;

@@ -153,7 +153,7 @@ std::vector<std::string> DomainExpert::getActions() {
 }
 
 cocg_ast::Action::SharedPtr DomainExpert::getAction(
-    const std::string &action, const std::vector<std::string> &params) {
+    const std::string &action, const std::vector<std::string> &params) const{
   std::string action_search = action;
   std::transform(action_search.begin(), action_search.end(),
                  action_search.begin(), ::tolower);

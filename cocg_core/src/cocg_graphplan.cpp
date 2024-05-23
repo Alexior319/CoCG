@@ -9,24 +9,28 @@ void create_init_graph(const std::vector<std::string>& goals, PAGraph& pa_graph,
   while (!goal_contained_in_state_layer(
       goals, pa_graph.state_layers[pa_graph.layers - 1])) {
     if (pa_graph.layers > actions.size()) {
-      std::cout << "--> [PAGraph] The layers of the graph has exceeded the "
-                   "actions num. <=================="
-                << std::endl;
+      std::cout
+          << "--> [PAGraph] Some goals not found in the last layer, and the "
+             "layers of the graph has exceeded the "
+             "actions num. <=================="
+          << std::endl;
       break;
     }
     create_graph_layer(pa_graph, actions);
   }
 
 #ifdef OUTPUT_DEBUG_INFO
-  std::cout
-      << "[PAGraph] Goals all found in the last state layer, total layers: "
-      << pa_graph.layers << std::endl;
+  if (pa_graph.layers <= actions.size())
+    std::cout
+        << "[PAGraph] Goals all found in the last state layer, total layers: "
+        << pa_graph.layers << std::endl;
 #endif
 
   // if the goals in the last state layer are mutex, continue expanding
   while (exist_mutex_in_goal_layer(goals, pa_graph)) {
     if (pa_graph.layers > actions.size()) {
-      std::cout << "--> [PAGraph] The layers of the graph has exceeded the "
+      std::cout << "--> [PAGraph] Exist mutex in the goal layer, but the "
+                   "layers of the graph has exceeded the "
                    "actions num. <=================="
                 << std::endl;
       break;
@@ -35,8 +39,9 @@ void create_init_graph(const std::vector<std::string>& goals, PAGraph& pa_graph,
   }
 
 #ifdef OUTPUT_DEBUG_INFO
-  std::cout << "[PAGraph] Init graph built, total layers: " << pa_graph.layers
-            << std::endl;
+  if (pa_graph.layers <= actions.size())
+    std::cout << "[PAGraph] Init graph built, total layers: " << pa_graph.layers
+              << std::endl;
 #endif
 }
 
@@ -221,7 +226,6 @@ void create_graph_layer(PAGraph& pa_graph,
   pa_graph.layers++;
 }
 
-// TODO: BUG HERE
 std::tuple<bool, bool> extract_backward_from_layer(
     const std::unordered_set<std::string>& cur_goals, const PAGraph& pa_graph,
     uint32_t cur_layer, std::vector<ActionLayerMap>& extraction_layers,

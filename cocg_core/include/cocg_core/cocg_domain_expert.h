@@ -93,7 +93,7 @@ class DomainExpert {
    * has not value.
    */
   cocg_ast::Action::SharedPtr getAction(
-      const std::string& action, const std::vector<std::string>& params = {});
+      const std::string& action, const std::vector<std::string>& params = {}) const;
 
   /// Get the temporal actions existing in the domain.
   /**
