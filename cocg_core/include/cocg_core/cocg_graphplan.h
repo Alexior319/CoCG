@@ -74,7 +74,12 @@ class PGStateNode {
         before_action_nodes_(before_action_nodes),
         after_action_nodes_(after_action_nodes) {}
   PGStateNode(const std::string fact_str) {
-    this->fact_ = parser::pddl::fromString(fact_str);
+    if (fact_str.find("(not ") != std::string::npos) {
+      this->fact_ = parser::pddl::fromString(fact_str);
+    } else {
+      this->fact_ =
+          parser::pddl::fromString(fact_str, false, cocg_ast::Node::AND);
+    }
     this->before_action_nodes_ = {};
     this->after_action_nodes_ = {};
   }

@@ -58,7 +58,6 @@ std::shared_ptr<SubGraphNode> build_cocg_subgraph(
     ret->actions_layers_[k] = {*action};
 
     // traverse the true part
-    // TODO: BUG HERE
     std::shared_ptr<cocg::ProblemExpert> next_true_mid_expert =
         apply_sensing_action(goal_state, *action, true, true);
     std::tuple<std::shared_ptr<cocg::ProblemExpert>,
@@ -131,7 +130,7 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
 
   // Step 3: Extract the graph to get a solution without any mutex
   // graph layers leq actions size (worst: sequential execution)
-  while (pa_graph.action_layers.size() <= actions.size()) {
+  while (true) {
     std::tuple<bool, std::vector<ActionLayerMap>> ret =
         extract_solution(goals, pa_graph);
     solved = std::get<0>(ret);
@@ -160,9 +159,18 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
     } else {
       std::cout << "[PAGraph] Extracting failed, expand the graph..."
                 << std::endl;
+      if (pa_graph.layers > actions.size()) {
+        std::cout << "--> [PAGraph] The layers of the graph has exceeded the "
+                     "actions num. <=================="
+                  << std::endl;
+        break;
+      }
       create_graph_layer(pa_graph, actions);
     }
   }
+  // the first layer is empty, remove it
+  if (ret_action_layers.size() > 0)
+    ret_action_layers.erase(ret_action_layers.begin());
 
   return ret_action_layers;
 }

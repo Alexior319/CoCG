@@ -8,6 +8,12 @@ void create_init_graph(const std::vector<std::string>& goals, PAGraph& pa_graph,
   // expand the graph until all goals are contained in the last layer
   while (!goal_contained_in_state_layer(
       goals, pa_graph.state_layers[pa_graph.layers - 1])) {
+    if (pa_graph.layers > actions.size()) {
+      std::cout << "--> [PAGraph] The layers of the graph has exceeded the "
+                   "actions num. <=================="
+                << std::endl;
+      break;
+    }
     create_graph_layer(pa_graph, actions);
   }
 
@@ -19,6 +25,12 @@ void create_init_graph(const std::vector<std::string>& goals, PAGraph& pa_graph,
 
   // if the goals in the last state layer are mutex, continue expanding
   while (exist_mutex_in_goal_layer(goals, pa_graph)) {
+    if (pa_graph.layers > actions.size()) {
+      std::cout << "--> [PAGraph] The layers of the graph has exceeded the "
+                   "actions num. <=================="
+                << std::endl;
+      break;
+    }
     create_graph_layer(pa_graph, actions);
   }
 
@@ -209,6 +221,7 @@ void create_graph_layer(PAGraph& pa_graph,
   pa_graph.layers++;
 }
 
+// TODO: BUG HERE
 std::tuple<bool, bool> extract_backward_from_layer(
     const std::unordered_set<std::string>& cur_goals, const PAGraph& pa_graph,
     uint32_t cur_layer, std::vector<ActionLayerMap>& extraction_layers,
@@ -251,6 +264,11 @@ std::tuple<bool, bool> extract_backward_from_layer(
             if (two_actions_mutex_in_layer(
                     action_node->get_action(), action_node2.first,
                     pa_graph.action_mutex_layers[cur_layer])) {
+#ifdef OUTPUT_DEBUG_INFO
+              std::cout << "[PAGraph] Action: " << action_node->get_action()
+                        << " mutex with extracted actions, choosing another...";
+              std::cout << std::endl;
+#endif
               mutex = true;
               break;
             }
@@ -300,9 +318,9 @@ std::tuple<bool, bool> extract_backward_from_layer(
             }
 
 #ifdef OUTPUT_DEBUG_INFO
-            std::cout << "<<< [PAGraph] Action found invalid: "
+            std::cout << "<<< [PAGraph] Action invalid: "
                       << action_node->get_action() << ", for goal: " << goal
-                      << " for previous extraction, remained goals: ";
+                      << " for current layer, remained goals: ";
             for (const auto& g : remained_goals) {
               std::cout << g << " ";
             }
@@ -357,8 +375,8 @@ bool exist_mutex_in_goal_layer(const std::vector<std::string>& goals,
       if (two_facts_mutex_in_layer(*goal1, *goal2,
                                    pa_graph.state_mutex_layers.back())) {
 #ifdef OUTPUT_DEBUG_INFO
-        std::cout << "[PAGraph] Mutex found: " << *goal1 << " " << *goal2
-                  << std::endl;
+        std::cout << "[PAGraph] Mutex found in goal layer: " << *goal1 << " "
+                  << *goal2 << std::endl;
 #endif
         return true;
       }
@@ -390,8 +408,8 @@ bool two_actions_mutex_in_layer(const std::string& action1,
     if (action_mutex_map.at(action1).find(action2) !=
         action_mutex_map.at(action1).end()) {
 #ifdef OUTPUT_DEBUG_INFO
-      std::cout << "[PAGraph] Mutex found: " << action1 << " " << action2
-                << std::endl;
+      std::cout << "[PAGraph] Mutex actions found: " << action1 << " "
+                << action2 << std::endl;
 #endif
       mutex = true;
     }
