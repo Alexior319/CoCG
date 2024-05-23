@@ -5,61 +5,64 @@
         block robot location
     )
     (:predicates
-        (robot-at ?r - robot ?p - location)
-        (hand-empty ?r - robot)
-        (block-on-hand ?r - robot ?b - block)
-        (block-at ?b - block ?p - location)
+        (robot_at ?r - robot ?p - location)
+        (hand_empty ?r - robot)
+        (block_on_hand ?r - robot ?b - block)
+        (block_at ?b - block ?p - location)
     )
 
-    (:action locate-robot-at
+    (:action locate_robot_at
         :parameters (?r - robot ?p - location)
         :observe
-        (robot-at ?r ?p)
+        (robot_at ?r ?p)
     )
 
-    (:action sense-hand-empty
+    (:action sense_hand_empty
         :parameters (?r - robot)
         :observe
-        (hand-empty ?r)
+        (hand_empty ?r)
     )
 
-    (:action sense-block-on-hand
+    (:action sense_block_on_hand
         :parameters (?r - robot ?b - block)
         :observe
-        (block-on-hand ?r ?b)
+        (block_on_hand ?r ?b)
     )
 
-    (:action sense-block-at
+    (:action sense_block_at
         :parameters (?r - robot ?b - block ?p - location)
         :precondition (and
-            (robot-at ?r ?p)
+            (robot_at ?r ?p)
         )
         :observe
-        (block-at ?b ?p)
+        (block_at ?b ?p)
     )
 
-    (:action move-to
+    (:action move_to
         :parameters (?r - robot ?pf - location ?pt - location)
-        :precondition (and (robot-at ?r ?pf) (hand-empty ?r))
-        :effect (and (not (robot-at ?r ?pf)) (robot-at ?r ?pt))
+        :precondition (and (robot_at ?r ?pf) (hand_empty ?r))
+        :effect (and (not (robot_at ?r ?pf)) (robot_at ?r ?pt))
     )
 
-    (:action move-with-block
+    (:action move_with_block
         :parameters (?r - robot ?b - block ?pf - location ?pt - location)
-        :precondition (and (robot-at ?r ?pf) (block-on-hand ?r ?b))
-        :effect (and (not (robot-at ?r ?pf)) (robot-at ?r ?pt))
+        :precondition (and (robot_at ?r ?pf) (block_on_hand ?r ?b))
+        :effect (and (not (robot_at ?r ?pf)) (robot_at ?r ?pt))
     )
 
     (:action pickup
         :parameters (?r - robot ?b - block ?p - location)
-        :precondition (and (robot-at ?r ?p) (block-at ?b ?p) (hand-empty ?r))
-        :effect (and (not (block-at ?b ?p)) (not (hand-empty ?r)) (block-on-hand ?r ?b))
+        :precondition (and (robot_at ?r ?p) (block_at ?b ?p) (hand_empty ?r))
+        :effect (and (not (block_at ?b ?p)) (not (hand_empty ?r)) (block_on_hand ?r ?b))
     )
 
     (:action place
         :parameters (?r - robot ?b - block ?p - location)
-        :precondition (and (robot-at ?r ?p) (block-on-hand ?r ?b))
-        :effect (and (not (block-on-hand ?r ?b)) (hand-empty ?r) (block-at ?b ?p))
+        :precondition (and (robot_at ?r ?p) (block_on_hand ?r ?b))
+        :effect (and (not (block_on_hand ?r ?b)) (hand_empty ?r) (block_at ?b ?p))
     )
 
 )
+
+;; Notice: predicate or action names should not contain '-' (subtract)
+;; or, parser will collide with the numeric
