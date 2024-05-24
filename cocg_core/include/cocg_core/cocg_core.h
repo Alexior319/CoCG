@@ -32,7 +32,8 @@ std::tuple<std::shared_ptr<cocg::ProblemExpert>, std::vector<cocg_ast::Action>,
            cocg::ContPlanNode::SharedPtr>
 traverse_contingent_planning_tree(
     const std::shared_ptr<cocg::ProblemExpert> init_state,
-    cocg::ContPlanNode::SharedPtr root, const cocg::DomainExpert& domain_expert);
+    cocg::ContPlanNode::SharedPtr root,
+    const cocg::DomainExpert& domain_expert);
 
 /**
  * @brief build the cocg graph recursively
@@ -48,9 +49,8 @@ traverse_contingent_planning_tree(
 std::shared_ptr<SubGraphNode> build_cocg_subgraph(
     std::shared_ptr<cocg::ProblemExpert> init_state,
     std::shared_ptr<cocg::ProblemExpert> goal_state,
-    std::vector<cocg_ast::Action> actions,
-    cocg::ContPlanNode::SharedPtr node, float t0,
-    const cocg::DomainExpert& domain_expert);
+    std::vector<cocg_ast::Action> actions, cocg::ContPlanNode::SharedPtr node,
+    float t0, const cocg::DomainExpert& domain_expert);
 
 /**
  * @brief compute the planning graph using GraphPlan algorithm or else
@@ -65,6 +65,13 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
     std::shared_ptr<cocg::ProblemExpert> goal_state,
     const std::vector<cocg_ast::Action>& actions,
     const cocg::DomainExpert& domain_expert);
+
+// TODO
+/**
+ * @brief print the cocg graph
+ * @param graph_root_node the root node of the graph
+ */
+void print_cocg_graph(std::shared_ptr<SubGraphNode> graph_root_node);
 }  // namespace cocg
 
 #endif  // COCG_CORE_SUBGRAPH_H_

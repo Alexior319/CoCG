@@ -93,9 +93,12 @@ void print_cont_plan_tree(ContPlanNode::SharedPtr root);
 /**
  * @brief print the action layers
  * @param action_layers the action layers
+ * @param num the number of indent to the right
+ * @param indent the indent string
  */
 void print_action_layers(
-    std::vector<std::vector<cocg_ast::Action>> action_layers);
+    std::vector<std::vector<cocg_ast::Action>> action_layers,
+    const int& num = 0, const std::string& indent = "");
 }  // namespace cocg
 
 #endif  // COCG_CORE_COCG_UTILS_H_

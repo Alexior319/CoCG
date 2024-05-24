@@ -152,6 +152,7 @@ void test_cocg_method() {
   auto cocg_subgraph_root = cocg::build_cocg_subgraph(
       problem_expert_init, root_goal_state, root_actions_set, root_next_node,
       t0, *domain_expert);
+  cocg::print_cocg_graph(cocg_subgraph_root);
 }
 
 int main() {

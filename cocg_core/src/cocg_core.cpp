@@ -6,7 +6,8 @@ std::tuple<std::shared_ptr<cocg::ProblemExpert>, std::vector<cocg_ast::Action>,
            cocg::ContPlanNode::SharedPtr>
 traverse_contingent_planning_tree(
     const std::shared_ptr<cocg::ProblemExpert> init_state,
-    cocg::ContPlanNode::SharedPtr root, const cocg::DomainExpert& domain_expert) {
+    cocg::ContPlanNode::SharedPtr root,
+    const cocg::DomainExpert& domain_expert) {
   std::shared_ptr<cocg::ProblemExpert> goal_state =
       std::make_shared<cocg::ProblemExpert>(init_state);
 
@@ -184,7 +185,31 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
   return ret_action_layers;
 }
 
-// TODO
-void print_cocg_graph(std::shared_ptr<SubGraphNode> graph_root_node) {}
+void print_cocg_tree(const std::string& prefix,
+                     const std::shared_ptr<SubGraphNode> node, bool isLeft,
+                     int depth = 0) {
+  if (node != nullptr) {
+    std::cout << prefix;
+
+    std::cout << (isLeft ? "├─t " : "└─f ");
+    std::cout << " depth: " << depth << ", layers: " << node->layers_cnt_
+              << std::endl;
+
+    // print the value(layered actions in the graph) of the node
+    print_action_layers(node->actions_layers_, depth, "|   ");
+
+    // enter the next tree level - left and right branch
+    print_cocg_tree(prefix + (isLeft ? "│   " : "    "), node->next_true_, true,
+                    depth + 1);
+    print_cocg_tree(prefix + (isLeft ? "│   " : "    "), node->next_false_,
+                    false, depth + 1);
+  }
+}
+
+void print_cocg_graph(std::shared_ptr<SubGraphNode> graph_root_node) {
+  std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n";
+  print_cocg_tree("", graph_root_node, true, 1);
+  std::cout << "**************************************\n";
+}
 
 }  // namespace cocg
