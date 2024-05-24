@@ -50,7 +50,6 @@ std::shared_ptr<SubGraphNode> build_cocg_subgraph(
   action_layers.swap(ret->actions_layers_);
 
   // plus the null layer or the sensing node layer
-  // TODO: BUG HERE
   ret->layers_cnt_ = k + 1;
   ret->actions_layers_.push_back({});
   if (node != nullptr) {

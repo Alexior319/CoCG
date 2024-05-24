@@ -11,13 +11,12 @@
 namespace cocg_ast {
 struct Tree {
   std::vector<cocg_ast::Node> nodes;
-  Tree(){
-    nodes = {};
-  };
+  Tree() { nodes = {}; };
   Tree(const Node& node) {
     nodes = {};
     nodes.push_back(node);
   }
+  Tree(const Tree& tree) { nodes = tree.nodes; }
 
   using SharedPtr = std::shared_ptr<Tree>;
 

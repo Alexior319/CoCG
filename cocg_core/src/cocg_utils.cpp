@@ -61,6 +61,11 @@ std::shared_ptr<cocg::ProblemExpert> apply_sensing_action(
   std::string observe_unknown_str = "(unknown " + observe_str + ")";
   cocg::Unknown observe_unknown = cocg::Unknown(observe_unknown_str);
 
+#ifdef OUTPUT_DEBUG_INFO
+  std::cout << "Judging observe unknown: "
+            << parser::pddl::toString(observe_unknown) << "\n";
+#endif
+
   if (sensing_result) {
     goal_state->removeConditionalUnknown(observe_unknown, true);
   } else {

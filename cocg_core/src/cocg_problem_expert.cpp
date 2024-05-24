@@ -240,11 +240,28 @@ bool ProblemExpert::removeConditionalUnknown(const cocg_ast::Tree& condition,
   if (it != conditionals_.end()) {
     conditionals_.erase(it);
 
+#ifdef OUTPUT_DEBUG_INFO
+    std::cout << "[ProblemExpert] Found the unknown predicate to remove: "
+              << parser::pddl::toString(condition)
+              << ", it is known to be: " << known_to_true << std::endl;
+#endif
+
     std::vector<cocg_ast::Tree> conditionals_to_remove;
     std::vector<cocg_ast::Tree> conditionals_to_add;
     if (condition.nodes[0].node_type == cocg_ast::Node::UNKNOWN) {
       for (auto c : conditionals_) {
         if (c.nodes[0].node_type == cocg_ast::Node::ONE_OF) {
+          bool exist_same_node = false;
+          for (const auto& c_child_node_ind : c.nodes[0].children) {
+            if (parser::pddl::checkNodeEquality(c.nodes[c_child_node_ind],
+                                                condition.nodes[1])) {
+              exist_same_node = true;
+              break;
+            }
+          }
+          // condition not child of the oneof node, do nothing
+          if (!exist_same_node) break;
+
           cocg_ast::Tree new_one_of;
           new_one_of.nodes.push_back(c.nodes[0]);
           new_one_of.nodes[0].children.clear();
@@ -262,7 +279,7 @@ bool ProblemExpert::removeConditionalUnknown(const cocg_ast::Tree& condition,
             if (num_children > 0) {
               conditionals_to_add.push_back(new_one_of);
             }
-          } else {
+          } else {  // known to be true, donnot contain other facts
             for (auto child_ind : c.nodes[0].children) {
               if (parser::pddl::checkNodeEquality(c.nodes[child_ind],
                                                   condition.nodes[1])) {
@@ -278,12 +295,36 @@ bool ProblemExpert::removeConditionalUnknown(const cocg_ast::Tree& condition,
           }
         }
       }
+#ifdef OUTPUT_DEBUG_INFO
+      std::cout << "[ProblemExpert] conditionals should be removed: ";
+      for (const auto& c : conditionals_to_remove) {
+        std::cout << parser::pddl::toString(c) << " ";
+      }
+      std::cout << std::endl;
+      std::cout << "[ProblemExpert] conditionals should be added: ";
+      for (const auto& c : conditionals_to_add) {
+        std::cout << parser::pddl::toString(c) << " ";
+      }
+      std::cout << std::endl;
+#endif
       for (const auto& c : conditionals_to_remove) {
         removeConditional(c);
       }
       for (const auto& c : conditionals_to_add) {
         addConditional(c);
       }
+#ifdef OUTPUT_DEBUG_INFO
+      std::cout << "[ProblemExpert] Remained conditionals: ";
+      for (const auto& c : conditionals_) {
+        std::cout << parser::pddl::toString(c) << " ";
+      }
+      std::cout << std::endl;
+      std::cout << "[ProblemExpert] Remained predicates: ";
+      for (const auto& c : predicates_) {
+        std::cout << parser::pddl::toString(c) << " ";
+      }
+      std::cout << std::endl;
+#endif
     }
     return true;
   }
