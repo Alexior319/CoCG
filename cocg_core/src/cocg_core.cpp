@@ -185,30 +185,44 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
   return ret_action_layers;
 }
 
-void print_cocg_tree(const std::string& prefix,
+void print_cocg_tree(std::vector<uint32_t>& cocg_graph_branch_cnt,
+                     const std::string& prefix,
                      const std::shared_ptr<SubGraphNode> node, bool isLeft,
-                     int depth = 0) {
+                     int depth = 0, int prev_total_layers = 0) {
   if (node != nullptr) {
     std::cout << prefix;
 
     std::cout << (isLeft ? "├─t " : "└─f ");
-    std::cout << " depth: " << depth << ", layers: " << node->layers_cnt_
-              << std::endl;
+    std::cout << " branch: " << depth - 1 << ", layers: " << node->layers_cnt_;
+    if (node->actions_layers_[node->layers_cnt_ - 1].empty()) {
+      auto valid_layers = prev_total_layers + node->layers_cnt_ - 1;
+      std::cout << ", total valid layers: " << valid_layers;
+      cocg_graph_branch_cnt.push_back(valid_layers);
+    }
+    std::cout << std::endl;
 
     // print the value(layered actions in the graph) of the node
     print_action_layers(node->actions_layers_, depth, "|   ");
 
     // enter the next tree level - left and right branch
-    print_cocg_tree(prefix + (isLeft ? "│   " : "    "), node->next_true_, true,
-                    depth + 1);
-    print_cocg_tree(prefix + (isLeft ? "│   " : "    "), node->next_false_,
-                    false, depth + 1);
+    print_cocg_tree(cocg_graph_branch_cnt, prefix + (isLeft ? "│   " : "    "),
+                    node->next_true_, true, depth + 1,
+                    prev_total_layers + node->layers_cnt_);
+    print_cocg_tree(cocg_graph_branch_cnt, prefix + (isLeft ? "│   " : "    "),
+                    node->next_false_, false, depth + 1,
+                    prev_total_layers + node->layers_cnt_);
   }
 }
 
 void print_cocg_graph(std::shared_ptr<SubGraphNode> graph_root_node) {
-  std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n";
-  print_cocg_tree("", graph_root_node, true, 1);
+  std::cout << "**************************************\n";
+  std::vector<uint32_t> cocg_graph_branch_cnt;
+  print_cocg_tree(cocg_graph_branch_cnt, "", graph_root_node, true, 1);
+  std::cout << "[CoCG] Total exec time for each branch: " << std::endl;
+  for (int i = 0; i < cocg_graph_branch_cnt.size(); i++) {
+    std::cout << "No." << i + 1 << ": " << cocg_graph_branch_cnt[i]
+              << std::endl;
+  }
   std::cout << "**************************************\n";
 }
 

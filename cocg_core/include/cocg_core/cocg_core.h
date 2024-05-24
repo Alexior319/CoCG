@@ -21,12 +21,12 @@ struct SubGraphNode {
 };
 
 /**
- * @brief traverse a contingent planning tree until the next sensing node or the
- * nullptr
+ * @brief traverse a contingent planning tree until the next sensing node or
+ * the nullptr
  * @param init_state the initial state
  * @param root the root of the contingent planning tree
- * @return a tuple with the goal state, the vector of ast actions and the last
- * node in the plan tree
+ * @return a tuple with the goal state, the vector of ast actions and the
+ * last node in the plan tree
  */
 std::tuple<std::shared_ptr<cocg::ProblemExpert>, std::vector<cocg_ast::Action>,
            cocg::ContPlanNode::SharedPtr>
@@ -66,7 +66,6 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
     const std::vector<cocg_ast::Action>& actions,
     const cocg::DomainExpert& domain_expert);
 
-// TODO
 /**
  * @brief print the cocg graph
  * @param graph_root_node the root node of the graph

@@ -22,5 +22,8 @@ add_test(
   COMMAND cocg_graphplan_test
 )
 
-add_executable(cocg_main_test cocg_main_test.cpp)
-target_link_libraries(cocg_main_test cocg_core cff_plan_solver)
+add_executable(cff_cocg_test cff_cocg_test.cpp cff_cocg.cpp)
+target_link_libraries(cff_cocg_test cocg_core cff_plan_solver)
+
+add_executable(cff_cocg cff_cocg_main.cpp cff_cocg.cpp)
+target_link_libraries(cff_cocg cocg_core cff_plan_solver)

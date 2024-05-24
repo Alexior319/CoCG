@@ -117,12 +117,53 @@ cocg_ast::Action::SharedPtr convert_plan_node_to_ast(
   return action;
 }
 
+void print_cont_tree(std::vector<uint32_t>& cont_tree_branch_cnt,
+                     const std::string& prefix, ContPlanNode::SharedPtr node,
+                     bool is_true_son, int prev_actions = 0,
+                     bool prev_is_sensing = false) {
+  if (node != nullptr) {
+    prev_actions++;
+
+    std::cout << prefix;
+    if (prev_is_sensing) {
+      std::cout << (is_true_son ? "├─t " : "└─f ");
+    } else {
+      std::cout << (is_true_son ? "|   " : "    ");
+    }
+    std::cout << node->item.action;
+    std::cout << std::endl;
+
+    if (node->true_node == nullptr) {
+      std::cout << prefix;
+      std::cout << "+-->[END] depth of this branch: " << prev_actions - 1
+                << std::endl;
+      cont_tree_branch_cnt.push_back(prev_actions - 1);
+      return;
+    }
+
+    if (node->false_node != node->true_node) {
+      print_cont_tree(cont_tree_branch_cnt,
+                      prefix + (is_true_son ? "│   " : "    "), node->true_node,
+                      true, prev_actions, true);
+      print_cont_tree(cont_tree_branch_cnt,
+                      prefix + (is_true_son ? "│   " : "    "),
+                      node->false_node, false, prev_actions, true);
+    } else {
+      print_cont_tree(cont_tree_branch_cnt, prefix, node->true_node, true,
+                      prev_actions, false);
+    }
+  }
+}
+
 void print_cont_plan_tree(ContPlanNode::SharedPtr root) {
-  if (root == nullptr) return;
-  root->print_info();
-  print_cont_plan_tree(root->true_node);
-  if (root->true_node != root->false_node)
-    print_cont_plan_tree(root->false_node);
+  std::cout << "**************************************\n";
+  std::vector<uint32_t> cont_tree_branch_cnt;
+  print_cont_tree(cont_tree_branch_cnt, "", root, true, 1);
+  std::cout << "[Cont] Total exec time for each branch: " << std::endl;
+  for (int i = 0; i < cont_tree_branch_cnt.size(); i++) {
+    std::cout << "No." << i + 1 << ": " << cont_tree_branch_cnt[i] << std::endl;
+  }
+  std::cout << "**************************************\n";
 }
 
 bool negated_facts(const std::string& s1, const std::string& s2) {
