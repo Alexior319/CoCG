@@ -104,6 +104,7 @@ void print_state_layer(const StateLayerMap& state_layer);
 // state node -> set of state nodes
 using StateMutexMap =
     std::unordered_map<std::string, std::unordered_set<std::string>>;
+void print_state_mutex_layer(const StateMutexMap& state_mutex_layer);
 
 // (action_name arg1 arg2 ...) -> action node
 using ActionLayerMap =
@@ -114,6 +115,7 @@ void print_action_layer(const ActionLayerMap& action_layer);
 // action node -> set of action nodes
 using ActionMutexMap =
     std::unordered_map<std::string, std::unordered_set<std::string>>;
+void print_action_mutex_layer(const ActionMutexMap& action_mutex_layer);
 
 // Proposition Layer(PL)-Action Layer(AL) Graph
 // PL-AL-PL...AL-PL

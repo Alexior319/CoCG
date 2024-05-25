@@ -57,7 +57,6 @@ void cff_cocg(const std::string& domain_path, const std::string& problem_path) {
   std::cout << "[CFF->CoCG] CFF planning done, start optimizing using CoCG..."
             << std::endl;
 
-  // TODO, bug found in the cff_cocg_test last layer
   std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
   std::cout << "[CoCG] The transformed graph is as follows:" << std::endl;
   cocg::print_cocg_graph(cocg_subgraph_root);

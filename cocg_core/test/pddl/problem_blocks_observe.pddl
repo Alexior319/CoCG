@@ -18,13 +18,9 @@
             (clear b2))
         (unknown
             (on b2 b3))
-        (or
-            (not (on b3 b2))
-            (not (on b2 b3))
-        )
-        (or
-            (not (on b2 b3))
-            (not (on b3 b2))
+        (oneof
+            (on b3 b2)
+            (on b2 b3)
         )
         (oneof
             (clear b3)

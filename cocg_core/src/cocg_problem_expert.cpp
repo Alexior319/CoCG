@@ -260,7 +260,7 @@ bool ProblemExpert::removeConditionalUnknown(const cocg_ast::Tree& condition,
             }
           }
           // condition not child of the oneof node, do nothing
-          if (!exist_same_node) break;
+          if (!exist_same_node) continue;
 
           cocg_ast::Tree new_one_of;
           new_one_of.nodes.push_back(c.nodes[0]);
