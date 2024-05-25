@@ -159,8 +159,12 @@ void create_graph_layer(PAGraph& pa_graph,
   // find mutex actions
   for (auto it = next_action_layer.begin(); it != next_action_layer.end();
        ++it) {
+#ifdef OUTPUT_DEBUG_INFO
     // initialize the mutex set
-    next_action_mutex_map[it->first] = {};
+    if (next_action_mutex_map.find(it->first) == next_action_mutex_map.end()) {
+      next_action_mutex_map[it->first] = {};
+    }
+#endif
     for (auto it2 = std::next(it); it2 != next_action_layer.end(); ++it2) {
       // if mutex, insert into mutex map
       // 1. find competing needs, preconditions are mutex in the previous layer
@@ -207,8 +211,13 @@ void create_graph_layer(PAGraph& pa_graph,
 
   // find mutex facts
   for (auto it = next_state_layer.begin(); it != next_state_layer.end(); ++it) {
+#ifdef OUTPUT_DEBUG_INFO
     // initialize the mutex set
-    next_state_mutex_map[it->first] = {};
+    if (next_state_mutex_map.find(it->first) == next_state_mutex_map.end()) {
+      // initialize the mutex set
+      next_state_mutex_map[it->first] = {};
+    }
+#endif
     for (auto it2 = std::next(it); it2 != next_state_layer.end(); ++it2) {
       // if mutex, insert into mutex map
       // 1. get negated literals
@@ -269,7 +278,6 @@ void create_graph_layer(PAGraph& pa_graph,
   pa_graph.layers++;
 }
 
-// TODO, bug found in extracting
 std::tuple<bool, bool> extract_backward_from_layer(
     const std::unordered_set<std::string>& cur_goals, const PAGraph& pa_graph,
     uint32_t cur_layer, std::vector<ActionLayerMap>& extraction_layers,

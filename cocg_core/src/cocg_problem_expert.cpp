@@ -227,6 +227,7 @@ bool ProblemExpert::removeConditional(const cocg_ast::Tree& condition) {
   return true;
 }
 
+// TODO, not support or and negetive precondtion currently
 bool ProblemExpert::removeConditionalUnknown(const cocg_ast::Tree& condition,
                                              bool known_to_true) {
   if (!isValidCondition(condition)) {  // if predicate is not valid, error
