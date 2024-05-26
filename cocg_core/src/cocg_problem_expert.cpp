@@ -8,6 +8,7 @@
 #include <set>
 #include <stdexcept>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "cocg_core/cocg_problem_expert_utils.h"
@@ -249,6 +250,7 @@ bool ProblemExpert::removeConditionalUnknown(const cocg_ast::Tree& condition,
 
     std::vector<cocg_ast::Tree> conditionals_to_remove;
     std::vector<cocg_ast::Tree> conditionals_to_add;
+    std::vector<std::pair<cocg_ast::Tree, bool>> conditionals_will_know;
     if (condition.nodes[0].node_type == cocg_ast::Node::UNKNOWN) {
       for (auto c : conditionals_) {
         if (c.nodes[0].node_type == cocg_ast::Node::ONE_OF) {
@@ -264,10 +266,10 @@ bool ProblemExpert::removeConditionalUnknown(const cocg_ast::Tree& condition,
           if (!exist_same_node) continue;
 
           cocg_ast::Tree new_one_of;
-          new_one_of.nodes.push_back(c.nodes[0]);
+          new_one_of.nodes.push_back(c.nodes[0]);  // the oneof node
           new_one_of.nodes[0].children.clear();
           int num_children = 0;
-          if (!known_to_true) {
+          if (!known_to_true) {  // known to be false, clear this condition
             for (auto child_ind : c.nodes[0].children) {
               if (!parser::pddl::checkNodeEquality(c.nodes[child_ind],
                                                    condition.nodes[1])) {
@@ -276,23 +278,48 @@ bool ProblemExpert::removeConditionalUnknown(const cocg_ast::Tree& condition,
                 num_children++;
               }
             }
-            conditionals_to_remove.push_back(c);
-            if (num_children > 0) {
-              conditionals_to_add.push_back(new_one_of);
+            if (num_children == 1) {
+              // the only child will be known to be true
+              cocg_ast::Tree new_knonwn_condition;
+              // the unknown node
+              new_knonwn_condition.nodes.push_back(condition.nodes[0]);
+              // has only one child node
+              new_knonwn_condition.nodes[0].children.clear();
+              new_knonwn_condition.nodes[0].children.push_back(1);
+              new_knonwn_condition.nodes.push_back(new_one_of.nodes[1]);
+              conditionals_will_know.push_back(
+                  std::make_pair(new_knonwn_condition, true));
             }
           } else {  // known to be true, donnot contain other facts
+            std::vector<uint32_t> other_known_children;
             for (auto child_ind : c.nodes[0].children) {
               if (parser::pddl::checkNodeEquality(c.nodes[child_ind],
                                                   condition.nodes[1])) {
-                new_one_of.nodes.push_back(c.nodes[child_ind]);
+                new_one_of.nodes.push_back(condition.nodes[1]);
                 new_one_of.nodes[0].children.push_back(num_children + 1);
                 num_children++;
+              } else {
+                other_known_children.push_back(child_ind);
               }
             }
-            conditionals_to_remove.push_back(c);
-            if (num_children > 0) {
-              conditionals_to_add.push_back(new_one_of);
+            // other facts are known to be false
+            for (int child_idx = 0; child_idx < other_known_children.size();
+                 ++child_idx) {
+              cocg_ast::Tree new_knonwn_condition;
+              // the unknown node
+              new_knonwn_condition.nodes.push_back(condition.nodes[0]);
+              // has only one child node
+              new_knonwn_condition.nodes[0].children.clear();
+              new_knonwn_condition.nodes[0].children.push_back(1);
+              new_knonwn_condition.nodes.push_back(
+                  c.nodes[other_known_children[child_idx]]);
+              conditionals_will_know.push_back(
+                  std::make_pair(new_knonwn_condition, false));
             }
+          }
+          conditionals_to_remove.push_back(c);
+          if (num_children > 0) {
+            conditionals_to_add.push_back(new_one_of);
           }
         }
       }
@@ -314,6 +341,7 @@ bool ProblemExpert::removeConditionalUnknown(const cocg_ast::Tree& condition,
       for (const auto& c : conditionals_to_add) {
         addConditional(c);
       }
+
 #ifdef OUTPUT_DEBUG_INFO
       std::cout << "[ProblemExpert] Remained conditionals: ";
       for (const auto& c : conditionals_) {
@@ -325,7 +353,16 @@ bool ProblemExpert::removeConditionalUnknown(const cocg_ast::Tree& condition,
         std::cout << parser::pddl::toString(c) << " ";
       }
       std::cout << std::endl;
+      std::cout << "[ProblemExpert] Other conditionals now known: \n";
+      for (const auto& c : conditionals_will_know) {
+        std::cout << "\t" << parser::pddl::toString(c.first) << " will be "
+                  << (c.second ? "true" : "false") << std::endl;
+      }
 #endif
+      // remove the conditional that will be known
+      for (const auto& c : conditionals_will_know) {
+        removeConditionalUnknown(c.first, c.second);
+      }
     }
     return true;
   }
