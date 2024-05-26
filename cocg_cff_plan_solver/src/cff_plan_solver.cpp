@@ -113,7 +113,7 @@ std::shared_ptr<ContPlanNode> CFFPlanSolver::get_cocg_cont_plan_tree_root(
   problem_out << problem;
   problem_out.close();
 
-  system(("/tmp/CFF -I -o /tmp/" + node_namespace + "/domain.pddl -f /tmp/" +
+  system(("/tmp/CFF -a 0 -o /tmp/" + node_namespace + "/domain.pddl -f /tmp/" +
           node_namespace + "/problem.pddl > " + "/tmp/" + node_namespace +
           "/pddlplan.1")
              .c_str());
