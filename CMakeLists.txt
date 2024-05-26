@@ -11,9 +11,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}")
 
 # compilation mode: Debug or Release
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 
-option(OUTPUT_DEBUG_INFO "Output debug info" ON)
+option(OUTPUT_DEBUG_INFO "Output debug info" OFF)
 option(BUILD_TESTING "compile tests" ON)
 
 if(OUTPUT_DEBUG_INFO)

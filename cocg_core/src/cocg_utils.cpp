@@ -152,6 +152,13 @@ void print_cont_tree(std::vector<uint32_t>& cont_tree_branch_cnt,
       print_cont_tree(cont_tree_branch_cnt, prefix, node->true_node, true,
                       prev_actions, false);
     }
+  } else if (prev_is_sensing && !is_true_son) {
+    std::cout << prefix;
+    std::cout << "└─f \n";
+    std::cout << prefix;
+    std::cout << "+-->[END] depth of this branch: " << prev_actions - 1
+              << std::endl;
+    cont_tree_branch_cnt.push_back(prev_actions - 1);
   }
 }
 
