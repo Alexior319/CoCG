@@ -1,0 +1,7 @@
+observe-box_p3-1_a2_b1_t1_t2
+	(f)no-op_t2_t3
+	(f)	no-op_t3_t4
+	(f)		no-op_t4_t5
+	(t)no-op_t2_t3
+	(t)	no-op_t3_t4
+	(t)		push_p3-1_p3-2_b1_a2_t4_t5

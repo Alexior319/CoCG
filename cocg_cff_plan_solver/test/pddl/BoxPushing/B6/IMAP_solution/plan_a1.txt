@@ -1,0 +1,48 @@
+observe-box_p1-1_a1_b0_t1_t2
+	(f)move_p1-1_p2-1_a1_t2_t3
+	(f)	move_p2-1_p3-1_a1_t3_t4
+	(f)		observe-box_p3-1_a1_b1_t4_t5
+	(f)			(f)art-joint-push_p3-1_p3-2_b1_a1_a2_t8_t9
+	(f)			(f)	move_p3-1_p3-2_a1_t5_t6
+	(f)			(f)		observe-box_p3-2_a1_b1_t6_t7
+	(f)			(f)			(t)move_p3-2_p3-1_a1_t7_t8
+	(f)			(f)			(t)	move_p3-1_p4-1_a1_t8_t9
+	(f)			(f)			(t)		move_p4-1_p5-1_a1_t9_t10
+	(f)			(f)			(t)			observe-box_p5-1_a1_b2_t10_t11
+	(f)			(f)			(t)				(f)art-joint-push_p5-1_p5-2_b2_a1_a2_t13_t14
+	(f)			(f)			(t)				(t)no-op_t11_t12
+	(f)			(f)			(t)				(t)	observe-box_p5-1_a1_b0_t12_t13
+	(f)			(f)			(t)				(t)		(f)joint-push_p5-1_p5-2_b2_a1_a2_t13_t14
+	(f)			(t)no-op_t5_t6
+	(f)			(t)	observe-box_p3-1_a1_b0_t6_t7
+	(f)			(t)		(f)observe-box_p3-1_a1_b0_t7_t8
+	(f)			(t)		(f)	(f)joint-push_p3-1_p3-2_b1_a1_a2_t8_t9
+	(f)			(t)		(f)	(f)	move_p3-1_p4-1_a1_t9_t10
+	(f)			(t)		(f)	(f)		move_p4-1_p5-1_a1_t10_t11
+	(f)			(t)		(f)	(f)			observe-box_p5-1_a1_b2_t11_t12
+	(f)			(t)		(f)	(f)				(f)art-joint-push_p5-1_p5-2_b2_a1_a2_t13_t14
+	(f)			(t)		(f)	(f)				(t)no-op_t12_t13
+	(f)			(t)		(f)	(f)				(t)	joint-push_p5-1_p5-2_b2_a1_a2_t13_t14
+	(t)push_p1-1_p1-2_b0_a1_t2_t3
+	(t)	move_p1-1_p2-1_a1_t3_t4
+	(t)		move_p2-1_p3-1_a1_t4_t5
+	(t)			observe-box_p3-1_a1_b1_t5_t6
+	(t)				(f)art-joint-push_p3-1_p3-2_b1_a1_a2_t8_t9
+	(t)				(f)	move_p3-1_p3-2_a1_t6_t7
+	(t)				(f)		observe-box_p3-2_a1_b1_t7_t8
+	(t)				(f)			(t)move_p3-2_p3-1_a1_t8_t9
+	(t)				(f)			(t)	move_p3-1_p4-1_a1_t9_t10
+	(t)				(f)			(t)		move_p4-1_p5-1_a1_t10_t11
+	(t)				(f)			(t)			observe-box_p5-1_a1_b2_t11_t12
+	(t)				(f)			(t)				(f)art-joint-push_p5-1_p5-2_b2_a1_a2_t13_t14
+	(t)				(f)			(t)				(t)no-op_t12_t13
+	(t)				(f)			(t)				(t)	joint-push_p5-1_p5-2_b2_a1_a2_t13_t14
+	(t)				(t)no-op_t6_t7
+	(t)				(t)	observe-box_p3-1_a1_b0_t7_t8
+	(t)				(t)		(f)joint-push_p3-1_p3-2_b1_a1_a2_t8_t9
+	(t)				(t)		(f)	move_p3-1_p4-1_a1_t9_t10
+	(t)				(t)		(f)		move_p4-1_p5-1_a1_t10_t11
+	(t)				(t)		(f)			observe-box_p5-1_a1_b2_t11_t12
+	(t)				(t)		(f)				(f)art-joint-push_p5-1_p5-2_b2_a1_a2_t13_t14
+	(t)				(t)		(f)				(t)no-op_t12_t13
+	(t)				(t)		(f)				(t)	joint-push_p5-1_p5-2_b2_a1_a2_t13_t14
