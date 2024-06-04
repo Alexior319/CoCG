@@ -8,7 +8,7 @@
 	(:predicates
 		(in ?a - agent ?l - location)
 		(rescue ?p - patient)
-		(patient-at ?p - patient ?l - location)
+		(patient_at ?p - patient ?l - location)
 		(lying ?p - pillar ?l - location)
 		(diff_agent ?a1 - agent ?a1 - agent)
 		(enable_patient ?pat - patient ?p - pillar)
