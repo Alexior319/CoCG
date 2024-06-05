@@ -66,7 +66,7 @@
     (:action place
         :parameters (?r - robot ?c - coffee ?p - location)
         :precondition (and (robot_at ?r ?p) (hold_coffee ?r ?c) (stirred ?c))
-        :effect (and (not (hold_coffee ?r ?c)) (coffee_at ?c ?p))
+        :effect (and (not (hold_coffee ?r ?c)) (coffee_at ?c ?p) (hand_empty ?r))
     )
 
 )
