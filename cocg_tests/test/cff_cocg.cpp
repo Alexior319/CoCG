@@ -33,6 +33,12 @@ void cff_cocg(const std::string& domain_path, const std::string& problem_path) {
   std::chrono::duration<double, std::ratio<1, 1>> cff_duration(end - start);
   auto cff_planning_duration_s = cff_duration.count();
   std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
+  std::cout << "[CFF] Problem solved by Contingent-FF, tree tructure:"
+            << std::endl;
+  cocg::print_cont_plan_tree(cff_plan_tree_root);
+  std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
+
+  std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
   std::cout << "CFF has finished planning in the first stage, planning time: "
             << cff_planning_duration_s << " (seconds)" << std::endl;
   std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";

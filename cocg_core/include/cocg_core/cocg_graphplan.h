@@ -41,6 +41,7 @@ class PGActionNode {
     is_noop_ = false;
     parser::pddl::get_facts_string(action.preconditions, precond_facts_);
     parser::pddl::get_facts_string(action.effects, effect_facts_);
+    set_action_name_params();
   }
   PGActionNode(const PGActionNode& other) {
     action_ = other.action_;
@@ -49,9 +50,14 @@ class PGActionNode {
     after_state_nodes_ = other.after_state_nodes_;
     precond_facts_ = other.precond_facts_;
     effect_facts_ = other.effect_facts_;
+    set_action_name_params();
   };
   ~PGActionNode() = default;
-  std::string get_action() { return get_grounded_action_string(this->action_); }
+  std::string get_action() { return this->action_name_params_; }
+  std::string action_name_params_;
+  void set_action_name_params() {
+    this->action_name_params_ = get_grounded_action_string(this->action_);
+  }
   bool is_noop_;
   cocg_ast::Action action_;
   std::vector<std::string> precond_facts_;
@@ -72,7 +78,9 @@ class PGStateNode {
                   after_action_nodes = {})
       : fact_(fact),
         before_action_nodes_(before_action_nodes),
-        after_action_nodes_(after_action_nodes) {}
+        after_action_nodes_(after_action_nodes) {
+          set_fact();
+        }
   PGStateNode(const std::string fact_str) {
     if (fact_str.find("(not ") != std::string::npos) {
       this->fact_ = parser::pddl::fromString(fact_str);
@@ -82,14 +90,20 @@ class PGStateNode {
     }
     this->before_action_nodes_ = {};
     this->after_action_nodes_ = {};
+    set_fact();
   }
   PGStateNode(const PGStateNode& other) {
     fact_ = other.fact_;
     before_action_nodes_ = other.before_action_nodes_;
     after_action_nodes_ = other.after_action_nodes_;
+    set_fact();
   };
   ~PGStateNode() = default;
-  std::string get_fact() { return get_fact_string(this->fact_); }
+  std::string get_fact() { return this->fact_string_; }
+  std::string fact_string_;
+  void set_fact() {
+    this->fact_string_ = get_fact_string(this->fact_);
+  }
   cocg_ast::Tree fact_;
   std::unordered_set<std::shared_ptr<PGActionNode>> before_action_nodes_;
   std::unordered_set<std::shared_ptr<PGActionNode>> after_action_nodes_;
