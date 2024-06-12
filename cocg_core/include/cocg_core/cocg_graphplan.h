@@ -223,13 +223,13 @@ bool two_actions_mutex_in_layer(const std::string& action1,
  * @param pa_graph the graph to extract
  * @param cur_layer the current layer to extract
  * @param extraction_layers the layers extracted
- * @param prev_goals the preconditions of extracted actions
+ * @param prev_goals_cnt the preconditions of extracted actions, precond -> count
  * @return (overall_extracted, cur_layer_extracted)
  */
 std::tuple<bool, bool> extract_backward_from_layer(
     const std::unordered_set<std::string>& cur_goals, const PAGraph& pa_graph,
     uint32_t cur_layer, std::vector<ActionLayerMap>& extraction_layers,
-    std::unordered_set<std::string> prev_goals = {});
+    std::unordered_map<std::string, int> prev_goals_cnt = {});
 }  // namespace cocg
 
 #endif  // COCG_CORE_COCG_GRAPHPLAN_H_

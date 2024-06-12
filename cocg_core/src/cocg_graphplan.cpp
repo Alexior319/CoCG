@@ -300,11 +300,10 @@ void create_graph_layer(PAGraph& pa_graph,
   pa_graph.layers++;
 }
 
-// TODO: seemed most time cost comes from here, may exist bugs
 std::tuple<bool, bool> extract_backward_from_layer(
     const std::unordered_set<std::string>& cur_goals, const PAGraph& pa_graph,
     uint32_t cur_layer, std::vector<ActionLayerMap>& extraction_layers,
-    std::unordered_set<std::string> prev_goals) {
+    std::unordered_map<std::string, int> prev_goals_cnt) {
   // backtracking algo: traverse layers until the first layer
   // If we are can go to initial state layer, we found the solution
   if (cur_layer == 0) {
@@ -327,19 +326,32 @@ std::tuple<bool, bool> extract_backward_from_layer(
     std::cout << "[PAGraph] Goals satisfied in layer No." << cur_layer
               << ", extracting the previous layer" << std::endl;
 #endif
+    std::unordered_set<std::string> prev_goals;
+    for (auto it = prev_goals_cnt.begin(); it != prev_goals_cnt.end(); it++) {
+      if (it->second > 0) {
+        prev_goals.insert(it->first);
+      }
+    }
     auto prev_ret = extract_backward_from_layer(
         prev_goals, pa_graph, cur_layer - 1, extraction_layers);
     found_extraction = std::get<0>(prev_ret);
   } else {
     // find the actions that can achieve the goals
     for (const auto& goal : cur_goals) {
+      bool already_achieved = false;
       auto state_node_pair = pa_graph.state_layers[cur_layer].find(goal);
       if (state_node_pair != pa_graph.state_layers[cur_layer].end()) {
+        // action achieves the goal
         for (const auto& action_node :
              state_node_pair->second->before_action_nodes_) {
           bool mutex = false;
           // the chosen action is mutex with extracted actions
           for (const auto& action_node2 : extraction_layers[cur_layer]) {
+            // action achieves >= 1 goals and has been extracted
+            if (action_node->get_action() == action_node2.first) {
+              already_achieved = true;
+              break;
+            }
             if (two_actions_mutex_in_layer(
                     action_node->get_action(), action_node2.first,
                     pa_graph.action_mutex_layers[cur_layer])) {
@@ -352,12 +364,16 @@ std::tuple<bool, bool> extract_backward_from_layer(
               break;
             }
           }
+          if (already_achieved) {
+            remained_goals.erase(goal);
+            break;
+          }
           if (!mutex) {
             // erase the goal in this layer
             remained_goals.erase(goal);
             // add the precondition facts to the prev_goals
             for (const auto& precond : action_node->precond_facts_) {
-              prev_goals.insert(precond);
+              prev_goals_cnt[precond]++;
             }
 
             // add the action to the extraction map
@@ -377,7 +393,7 @@ std::tuple<bool, bool> extract_backward_from_layer(
             // extract the current layer with the remained goals
             auto cur_remained_ret =
                 extract_backward_from_layer(remained_goals, pa_graph, cur_layer,
-                                            extraction_layers, prev_goals);
+                                            extraction_layers, prev_goals_cnt);
             found_extraction = std::get<0>(cur_remained_ret);
             goals_extracted_in_cur_layer = std::get<1>(cur_remained_ret);
             // if found, break the loop and find the next goal
@@ -393,7 +409,7 @@ std::tuple<bool, bool> extract_backward_from_layer(
 
             // remove the preconditions from the prev_goals
             for (const auto& precond : action_node->precond_facts_) {
-              prev_goals.erase(precond);
+              prev_goals_cnt[precond]--;
             }
 
 #ifdef OUTPUT_DEBUG_INFO
