@@ -50,17 +50,18 @@ cocg_ast::Plan encode_plan(const std::shared_ptr<ContPlanNode>& root);
 std::shared_ptr<ContPlanNode> decode_plan(const cocg_ast::Plan& plan);
 
 namespace internal {
-void encode_plan(const std::shared_ptr<ContPlanNode>& root, std::vector<int>& struc,
+void encode_plan(const std::shared_ptr<ContPlanNode>& root,
+                 std::vector<int>& struc,
                  std::vector<cocg_ast::PlanItem>& data);
 
-std::shared_ptr<ContPlanNode> decode_plan(std::vector<int>& struc,
-                                      std::vector<cocg_ast::PlanItem>& data);
+std::shared_ptr<ContPlanNode> decode_plan(
+    std::vector<int>& struc, std::vector<cocg_ast::PlanItem>& data);
 
-std::shared_ptr<ContPlanNode> decode_plan(std::vector<int>& struc,
-                                      std::vector<cocg_ast::PlanItem>& data);
+std::shared_ptr<ContPlanNode> decode_plan(
+    std::vector<int>& struc, std::vector<cocg_ast::PlanItem>& data);
 
 std::shared_ptr<ContPlanNode> decode_plan(std::queue<int>& struc,
-                                      std::queue<cocg_ast::PlanItem>& data);
+                                          std::queue<cocg_ast::PlanItem>& data);
 }  // namespace internal
 }  // namespace cocg
 

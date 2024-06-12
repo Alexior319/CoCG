@@ -1,6 +1,7 @@
 #ifndef COCG_CORE_COCG_UTILS_H_
 #define COCG_CORE_COCG_UTILS_H_
 
+#include <chrono>
 #include <memory>
 #include <tuple>
 
@@ -9,6 +10,43 @@
 #include "cocg_core/cont_plan_node.h"
 
 namespace cocg {
+
+/**
+ * @brief record time for each event.
+ */
+class Timer {
+ public:
+  Timer(std::string name) : name_(name) {}
+  Timer() { name_ = "Default"; }
+
+  void record(std::string description = "") {
+    auto time_point = std::chrono::high_resolution_clock::now();
+    time_events_.push_back({time_point, description});
+  }
+
+  void print_events() {
+    auto events_count = time_events_.size();
+    double duration, total_duration;
+    for (auto i = 0; i < events_count - 1; i++) {
+      auto j = i + 1;
+      std::chrono::duration<double, std::ratio<1, 1>> event_duration(
+          time_events_[j].first - time_events_[i].first);
+      std::chrono::duration<double, std::ratio<1, 1>> from_start_duration(
+          time_events_[j].first - time_events_[0].first);
+      duration = event_duration.count();
+      total_duration = from_start_duration.count();
+      std::cout << "[" << this->name_ << "] " << time_events_[j].second << ": "
+                << duration << "(s), from start(s): " << total_duration
+                << std::endl;
+    }
+  }
+
+ private:
+  std::string name_;
+  std::vector<
+      std::pair<std::chrono::_V2::system_clock::time_point, std::string>>
+      time_events_;
+};
 
 /**
  * @brief apply the effects of an actuation action to a state

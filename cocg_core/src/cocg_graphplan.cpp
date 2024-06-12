@@ -45,6 +45,7 @@ void create_init_graph(const std::vector<std::string>& goals, PAGraph& pa_graph,
 #endif
 }
 
+// TODO: replace iterator with index in vectors
 void create_graph_layer(PAGraph& pa_graph,
                         const std::vector<cocg_ast::Action>& actions) {
   uint32_t cur_layer = pa_graph.layers - 1, next_layer = cur_layer + 1;
@@ -53,6 +54,11 @@ void create_graph_layer(PAGraph& pa_graph,
   StateMutexMap next_state_mutex_map;
   ActionMutexMap next_action_mutex_map;
 
+#ifdef OUTPUT_DEBUG_INFO
+  cocg::Timer graph_timer("CreateGraphLayer." + std::to_string(next_layer));
+  graph_timer.record("Start");
+#endif
+
   // copy facts over to next state layer
   for (const auto& it : pa_graph.state_layers[cur_layer]) {
     // just copy fact, ignore the connections
@@ -60,6 +66,9 @@ void create_graph_layer(PAGraph& pa_graph,
         std::make_shared<PGStateNode>(it.second->fact_);
     next_state_layer[it.first] = new_node;
   }
+#ifdef OUTPUT_DEBUG_INFO
+  graph_timer.record("Copy facts");
+#endif
 
   // make the noop layer
   for (auto& it : pa_graph.state_layers[cur_layer]) {
@@ -88,6 +97,9 @@ void create_graph_layer(PAGraph& pa_graph,
     // insert the noop node
     next_action_layer[noop_node->get_action()] = noop_node;
   }
+#ifdef OUTPUT_DEBUG_INFO
+  graph_timer.record("Make noop layer");
+#endif
 
   // insert the applicable actions into next layer
   for (const auto& action : actions) {
@@ -155,6 +167,9 @@ void create_graph_layer(PAGraph& pa_graph,
       next_action_layer[a_node->get_action()] = a_node;
     }
   }
+#ifdef OUTPUT_DEBUG_INFO
+  graph_timer.record("Insert applicable actions");
+#endif
 
   // find mutex actions
   for (auto it = next_action_layer.begin(); it != next_action_layer.end();
@@ -208,6 +223,9 @@ void create_graph_layer(PAGraph& pa_graph,
       }
     }
   }
+#ifdef OUTPUT_DEBUG_INFO
+  graph_timer.record("Find mutex actions");
+#endif
 
   // find mutex facts
   for (auto it = next_state_layer.begin(); it != next_state_layer.end(); ++it) {
@@ -256,6 +274,9 @@ void create_graph_layer(PAGraph& pa_graph,
       }
     }
   }
+#ifdef OUTPUT_DEBUG_INFO
+  graph_timer.record("Find mutex facts");
+#endif
 
 #ifdef OUTPUT_DEBUG_INFO
   std::cout << "-----------------------------------" << std::endl;
@@ -268,6 +289,7 @@ void create_graph_layer(PAGraph& pa_graph,
   print_state_layer(next_state_layer);
   std::cout << "[PAGraph] Next state mutex: \n";
   print_state_mutex_layer(next_state_mutex_map);
+  graph_timer.print_events();
 #endif
 
   // expand the graph
@@ -278,6 +300,7 @@ void create_graph_layer(PAGraph& pa_graph,
   pa_graph.layers++;
 }
 
+// TODO: seemed most time cost comes from here, may exist bugs
 std::tuple<bool, bool> extract_backward_from_layer(
     const std::unordered_set<std::string>& cur_goals, const PAGraph& pa_graph,
     uint32_t cur_layer, std::vector<ActionLayerMap>& extraction_layers,

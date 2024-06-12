@@ -96,6 +96,9 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
   PAGraph pa_graph;
   bool solved = false;
 
+  cocg::Timer planning_graph_timer("PlanningGraph");
+  planning_graph_timer.record("Start");
+
 #ifdef OUTPUT_DEBUG_INFO
   std::cout << "---------------------------------------------" << std::endl;
   std::cout << "[PAGraph] applicable actions in this graph: ";
@@ -124,6 +127,7 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
   for (const auto& pred : goal_state->getPredicates()) {
     goals.push_back(parser::pddl::toString(pred));
   }
+  planning_graph_timer.record("build the first layer");
 
 #ifdef OUTPUT_DEBUG_INFO
   std::cout << "-----------------------------\n";
@@ -137,6 +141,7 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
   // Step 2: expand the graph until the goal facts all appear in the last state,
   // without state mutex
   create_init_graph(goals, pa_graph, actions);
+  planning_graph_timer.record("Create init graph");
 
   // Step 3: Extract the graph to get a solution without any mutex
   // graph layers leq actions size (worst: sequential execution)
@@ -178,6 +183,9 @@ std::vector<std::vector<cocg_ast::Action>> compute_planning_graph(
       create_graph_layer(pa_graph, actions);
     }
   }
+  planning_graph_timer.record("Extracting solution");
+  planning_graph_timer.print_events();
+
   // the first layer is empty, remove it
   if (ret_action_layers.size() > 0)
     ret_action_layers.erase(ret_action_layers.begin());
