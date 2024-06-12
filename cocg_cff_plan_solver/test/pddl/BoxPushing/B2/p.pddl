@@ -1,4 +1,4 @@
-(define (problem Box-2)
+(define (problem BP-R2-H1)
 	(:domain Box-2)
 
 	(:goal

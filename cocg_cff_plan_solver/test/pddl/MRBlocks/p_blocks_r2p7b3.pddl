@@ -1,9 +1,9 @@
-(define (problem BW-r3-p6-b3)
+(define (problem BW-r3-p7-b3)
     (:domain blocksworld)
 
     (:objects
         r1 r2 r3 - robot
-        ps p1 p2 p3 p4 p5 p6 pg - location
+        ps p1 p2 p3 p4 p5 p6 p7 pg - location
         b1 b2 b3 - block
     )
 
@@ -34,9 +34,12 @@
             (block_at b3 p5))
         (unknown
             (block_at b3 p6))
+        (unknown
+            (block_at b3 p7))
         (oneof
             (block_at b3 p5)
             (block_at b3 p6)
+            (block_at b3 p7)
         )
     )
     (:goal

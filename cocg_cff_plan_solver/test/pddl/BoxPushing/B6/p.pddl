@@ -1,5 +1,5 @@
-(define (problem Box-4)
-	(:domain Box-4)
+(define (problem Box-6)
+	(:domain Box-6)
 	(:goal
 		(and (box_at b0 p1_2) (box_at b1 p3_2) (box_at b2 p5_2))
 	)
