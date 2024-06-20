@@ -1,8 +1,5 @@
 # CoCG
 
-- English
-- [中文](README_zh.md)
-
 ## Introduction
 
 To improve the task execution efficiency of contingent plans, this project implements a method named **CoCG**, which **Co**mbined the **C**ontingent planning and **G**raph-based planning methods.
